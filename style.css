@@ -1,0 +1,353 @@
+/* Google Fonts para tipografia profissional */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@600;700;800&display=swap');
+
+/* Estilos CSS personalizados */
+body {
+    font-family: 'Inter', sans-serif;
+    /* Gradiente sutil no fundo para profundidade */
+    background: radial-gradient(circle at top left, rgba(211, 47, 47, 0.3) 0%, rgba(10, 10, 10, 1) 70%), #0A0A0A; /* Luzes vermelhas no fundo */
+    min-height: 100vh; /* Garante que o gradiente cubra toda a altura */
+    
+    /* Adicionado para layout flexbox para empurrar o rodapé para baixo */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Adicionado para o main ocupar o espaço restante */
+main {
+    flex-grow: 1; 
+}
+
+/* Efeito de brilho para botões de destaque */
+.btn-shine {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+.btn-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: skewX(-20deg);
+    transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: -1;
+}
+.btn-shine:hover::before {
+    left: 125%;
+}
+
+/* Estilo para inputs */
+.input-modern {
+    background-color: #303030; /* grayDark */
+    border: 1px solid #606060; /* grayMedium */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.input-modern:focus {
+    border-color: #D32F2F; /* accent */
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.3); /* Sombra com a cor accent */
+}
+
+/* Efeito de elevação para cards - AGORA SEMPRE ATIVO E SEM QUALQUER INTERAÇÃO NO HOVER */
+.card-hover-effect {
+    /* Remove qualquer transição para garantir que não haja animação no hover */
+    transition: none !important; 
+    /* Define o estado final (elevado e brilhante) como o estado padrão */
+    transform: translateY(-10px) !important; /* Elevação */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), /* Sombra */
+                0 0 30px rgba(211, 47, 47, 0.8), /* Brilho forte */
+                0 0 60px rgba(211, 47, 47, 0.4) !important; /* Brilho difuso forte */
+}
+/* Garante que o hover não faça absolutamente nada */
+.card-hover-effect:hover {
+    /* Redefine as propriedades para os mesmos valores do estado normal, com !important */
+    transform: translateY(-10px) !important; 
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 
+                0 0 30px rgba(211, 47, 47, 0.8), 
+                0 0 60px rgba(211, 47, 47, 0.4) !important; 
+}
+
+
+/* Gradiente para barra de progresso */
+#progressBar {
+    background: linear-gradient(to right, #D32F2F, #C62828); /* accent, accentDark */
+}
+
+/* Animação de pulsação lenta para ícones */
+@keyframes slow-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); } /* Aumentado para 1.08 para maior percepção */
+    100% { transform: scale(1); }
+}
+
+/* Estilo para bordas de destaque (ex: histórico) */
+.border-accent-gradient {
+    border-left: 4px solid transparent;
+    /* Usando valores hexadecimais diretos para o gradiente da borda */
+    border-image: linear-gradient(to bottom, #D32F2F, #C62828) 1; 
+}
+
+/* MODIFICADO: Animação de ícones no hover e pulsação constante */
+.icon-hover-pulse i {
+    transition: transform 0.3s ease;
+    animation: slow-pulse 2s infinite ease-in-out; /* Aplica a animação de pulsação lenta */
+}
+.icon-hover-pulse:hover i {
+    transform: scale(1.15); /* Mantém o efeito de escala maior no hover, ligeiramente aumentado */
+    animation: none; /* Pausa a animação de pulsação no hover para o efeito de escala ser mais perceptível */
+}
+
+/* Novo estilo para o cabeçalho com gradiente */
+.header-gradient {
+    background: linear-gradient(to right, #0A0A0A, #1A1A1A, #0A0A0A); /* Gradiente de preto para um preto um pouco mais claro e de volta para preto */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Sombra mais pronunciada para profundidade */
+    z-index: 50; /* Já está em 50, mas é bom garantir que não seja menor que o menu */
+}
+
+/* Transições de Seção */
+.section-transition {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.section-transition.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Animação para o modal de resgate */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-bounce {
+    animation: bounce 1s infinite;
+}
+
+/* --- NOVAS REGRAS PARA O MENU MOBILE LATERAL --- */
+
+/* Estilo inicial para o menu mobile como barra lateral */
+#mobileMenu {
+    position: fixed;
+    /* top e height serão definidos via JavaScript */
+    right: -100%; /* Esconde o menu fora da tela à direita, cobrindo 100% */
+    width: 100%; /* Largura total da tela */
+    background-color: #1A1A1A; /* darkSurface */
+    /* Ajuste a sombra para que ela não crie um vão */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5); /* Mantenha a sombra existente */
+    transition: right 0.5s ease-out; /* Transição para o efeito de abertura/fechamento */
+    z-index: 1001; /* <--- MODIFICADO AQUI: Aumente o z-index para garantir que ele esteja acima do cabeçalho */
+    display: block; /* Garante que o elemento esteja no fluxo para a transição */
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a altura */
+}
+
+/* Estado 'ativo' para o menu mobile (quando aberto) */
+#mobileMenu.active {
+    right: 0; /* Move o menu para dentro da tela */
+}
+
+/* Estilos para os links dentro do menu mobile */
+#mobileMenu ul {
+    padding: 0;
+    list-style: none;
+}
+
+#mobileMenu ul li a {
+    display: block;
+    padding: 15px 20px;
+    color: #F0F0F0; /* primary */
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#mobileMenu ul li a:hover {
+    background-color: #303030; /* grayDark */
+    color: #D32F2F; /* accent */
+}
+
+/* Oculta o menu mobile por padrão em telas maiores */
+@media (min-width: 768px) {
+    #mobileMenu {
+        display: none !important; /* Garante que o menu esteja oculto em desktops */
+    }
+    /* Oculta o botão do menu mobile em telas maiores */
+    #mobileMenuButton {
+        display: none !important;
+    }
+
+    /* Ajustes para telas maiores (desktop) */
+    main.container {
+        max-width: 1200px; /* Aumenta a largura máxima do conteúdo principal */
+        padding-left: 32px; /* px-8 */
+        padding-right: 32px; /* px-8 */
+    }
+
+    #homePage h2 {
+        font-size: 48px; /* text-5xl */
+    }
+
+    #homePage p {
+        font-size: 20px; /* text-xl */
+    }
+
+    #homePage .icon-hover-pulse h3 {
+        font-size: 24px; /* text-2xl */
+    }
+
+    #homePage .flex-col button {
+        font-size: 20px; /* text-xl */
+        padding-left: 40px; /* px-10 */
+        padding-right: 40px; /* px-10 */
+    }
+
+    #homePage .flex-col.md\:space-x-8 {
+        /* Sobrescreve o espaçamento para desktop se necessário, ou adicione uma nova classe */
+        /* Por exemplo, se quiser mais espaço: */
+        /* margin-left: 40px; margin-right: 40px; */
+    }
+
+    #loginPage, #registerPage {
+        max-width: 512px; /* max-w-lg */
+    }
+
+    #loginPage h2, #registerPage h2 {
+        font-size: 36px; /* text-4xl */
+    }
+
+    #loginPage label, #registerPage label {
+        font-size: 18px; /* text-lg */
+    }
+
+    #loginPage input, #registerPage input {
+        padding-top: 16px; /* py-4 */
+        padding-bottom: 16px; /* py-4 */
+    }
+
+    #loginPage button[type="submit"], #registerPage button[type="submit"] {
+        font-size: 20px; /* text-xl */
+    }
+
+    #loginPage p, #registerPage p {
+        font-size: 18px; /* text-lg */
+    }
+
+    #clientPanel .md\:w-1\/4 {
+        width: 33.333333%; /* md:w-1/3 */
+    }
+
+    #clientPanel #clientName {
+        font-size: 24px; /* text-2xl */
+    }
+
+    #clientPanel .dashboard-nav-item {
+        font-size: 18px; /* text-lg */
+    }
+
+    #clientPanel .dashboard-content h3 {
+        font-size: 30px; /* text-3xl */
+    }
+
+    #clientPanel #currentPoints,
+    #clientPanel #pointsToNextReward,
+    #clientPanel #rewardsRedeemed {
+        font-size: 60px; /* text-6xl */
+    }
+
+    #clientPanel .bg-grayDark p {
+        font-size: 20px; /* text-xl */
+    }
+
+    #clientPanel #progressBar + p { /* Progresso para a Próxima Recompensa */
+        font-size: 16px; /* text-base */
+    }
+
+    #clientPanel #addPointsBtn {
+        font-size: 18px; /* text-lg */
+    }
+
+    #clientPanel #transactionHistory p {
+        font-size: 18px; /* text-lg */
+    }
+
+    #clientPanel #rewardsList h4 {
+        font-size: 24px; /* text-2xl */
+    }
+
+    #clientPanel #rewardsList p {
+        font-size: 18px; /* text-lg */
+    }
+
+    #clientPanel .text-accent {
+        font-size: 20px; /* text-xl */
+    }
+
+    #clientPanel .redeem-reward-btn {
+        font-size: 18px; /* text-lg */
+    }
+
+    #profileContent .space-y-4 p {
+        font-size: 20px; /* text-xl */
+    }
+
+    #profileContent button {
+        font-size: 18px; /* text-lg */
+    }
+
+    #redeemModal {
+        max-width: 512px; /* max-w-md */
+    }
+
+    #redeemModal h3 {
+        font-size: 30px; /* text-3xl */
+    }
+
+    #redeemModal p {
+        font-size: 18px; /* text-lg */
+    }
+
+    #redeemModal .text-accent {
+        font-size: 24px; /* text-2xl */
+    }
+
+    #redeemModal .text-sm { /* "Você tem X pontos" */
+        font-size: 16px; /* text-base */
+    }
+
+    #redeemModal button {
+        font-size: 18px; /* text-lg */
+    }
+
+    footer h4 {
+        font-size: 20px; /* text-xl */
+    }
+
+    footer p, footer li a {
+        font-size: 16px; /* text-base */
+    }
+
+    footer .text-2xl { /* Ícones sociais */
+        font-size: 30px; /* text-3xl */
+    }
+
+    footer .text-sm { /* Copyright */
+        font-size: 14px; /* text-sm */
+    }
+}
+
+/* Nova classe para desabilitar o scroll do body */
+body.no-scroll {
+    overflow: hidden;
+}
