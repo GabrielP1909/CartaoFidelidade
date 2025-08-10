@@ -7,21 +7,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerPage = document.getElementById('registerPage');
     const clientPanel = document.getElementById('clientPanel');
 
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
+    const loginBtn = document.getElementById('loginBtn'); // Botão de login na home
+    const registerBtn = document.getElementById('registerBtn'); // Botão de registro na home
     const goToRegisterBtn = document.getElementById('goToRegisterBtn');
     const goToLoginBtn = document.getElementById('goToLoginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
-    const mobileMenuButton = document.getElementById('mobileMenuButton'); // Mantido para o event listener
-    const mobileMenu = document.getElementById('mobileMenu');
-    const header = document.querySelector('header'); // Referência ao cabeçalho
-    const valkiriasLogo = document.getElementById('valkiriasLogo'); // Adicionado: Referência ao logo Valkirias
+    
+    // Novos elementos para o menu lateral (sidebar)
+    const openSidebarBtn = document.getElementById('openSidebarBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+    const header = document.querySelector('header'); // Mantido para ajuste de posição da sidebar
+    const valkiriasLogo = document.getElementById('valkiriasLogo');
+
+    // Novos botões de login/registro no menu lateral
+    const loginBtnSidebar = document.getElementById('loginBtnSidebar');
+    const registerBtnSidebar = document.getElementById('registerBtnSidebar');
 
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
 
     const clientName = document.getElementById('clientName');
-    const clientEmail = document.getElementById('clientEmail');
+    const clientEmail = document = document.getElementById('clientEmail');
     const qrcodeDiv = document.getElementById('qrcode');
     const currentPoints = document.getElementById('currentPoints');
     const pointsToNextReward = document.getElementById('pointsToNextReward');
@@ -32,21 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const transactionHistory = document.getElementById('transactionHistory');
     const rewardsList = document.getElementById('rewardsList');
 
-    // Elementos do modal de resgate
-    const redeemModal = document.getElementById('redeemModal');
-    const modalRewardName = document.getElementById('modalRewardName');
-    const modalRewardDescription = document.getElementById('modalRewardDescription');
-    const modalRewardCost = document.getElementById('modalRewardCost');
-    const modalCurrentPoints = document.getElementById('modalCurrentPoints');
-    const confirmRedeemBtn = document.getElementById('confirmRedeemBtn');
-    const cancelRedeemBtn = document.getElementById('cancelRedeemBtn');
-
     // Elementos do painel do cliente (abas)
     const dashboardNavItems = document.querySelectorAll('.dashboard-nav-item');
     const dashboardContents = document.querySelectorAll('.dashboard-content');
     const profileName = document.getElementById('profileName');
     const profileEmail = document.getElementById('profileEmail');
-    const profilePhone = document.getElementById('profilePhone'); // Adicionado para o perfil
+    const profilePhone = document.getElementById('profilePhone');
+
+    // Elementos do novo modal de links
+    const showAllLinksBtn = document.getElementById('showAllLinksBtn');
+    const allLinksModal = document.getElementById('allLinksModal');
+    const closeAllLinksModalBtn = document.getElementById('closeAllLinksModalBtn');
+    const allLinksList = document.getElementById('allLinksList');
+
 
     let currentLoggedInUserData = null; // Variável para armazenar os dados do usuário logado
 
@@ -54,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const showSection = (sectionToShow) => {
         // Esconde todas as seções principais com transição
         [homePage, loginPage, registerPage, clientPanel].forEach(section => {
-            section.classList.remove('active'); // Remove a classe 'active' para iniciar a transição de saída
+            section.classList.remove('active');
             section.classList.add('hidden');
         });
 
@@ -64,9 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
         void sectionToShow.offsetWidth; 
         sectionToShow.classList.add('active');
 
-        // Fecha o menu mobile se estiver aberto
-        if (mobileMenu.classList.contains('active')) {
-            mobileMenu.classList.remove('active');
+        // Fecha o menu lateral se estiver aberto
+        if (sidebarMenu.classList.contains('active')) {
+            sidebarMenu.classList.remove('active');
         }
         // Garante que o scroll do body seja reativado ao mudar de seção
         document.body.classList.remove('no-scroll');
@@ -80,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (clientEmail) clientEmail.textContent = userData.email;
         if (profileName) profileName.textContent = userData.name;
         if (profileEmail) profileEmail.textContent = userData.email;
-        if (profilePhone) profilePhone.textContent = userData.phone || 'Não informado'; // Adiciona telefone ao perfil
+        if (profilePhone) profilePhone.textContent = userData.phone || 'Não informado';
 
         // Gerar QR Code
         if (qrcodeDiv && typeof QRCode !== 'undefined') {
@@ -119,18 +124,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userData.transactions && userData.transactions.length > 0) {
                 userData.transactions.forEach(transaction => {
                     const transactionDiv = document.createElement('div');
-                    transactionDiv.classList.add('bg-grayDark', 'p-4', 'rounded-lg', 'border-accent-gradient');
+                    transactionDiv.classList.add('transaction-item'); // Usando a nova classe CSS
                     transactionDiv.innerHTML = `
-                        <div class="flex justify-between items-center mb-1">
-                            <p class="text-primary font-semibold">${transaction.description}</p>
-                            <span class="${transaction.pointsChange > 0 ? 'text-accent' : 'text-red-500'} font-bold">${transaction.pointsChange > 0 ? '+' : ''}${transaction.pointsChange} Pontos</span>
+                        <div class="transaction-header">
+                            <p class="transaction-description">${transaction.description}</p>
+                            <span class="transaction-points ${transaction.pointsChange > 0 ? 'positive' : 'negative'}">${transaction.pointsChange > 0 ? '+' : ''}${transaction.pointsChange} Pontos</span>
                         </div>
-                        <p class="text-grayLight text-sm">Data: ${transaction.date}</p>
+                        <p class="transaction-date">Data: ${transaction.date}</p>
                     `;
                     transactionHistory.appendChild(transactionDiv);
                 });
             } else {
-                transactionHistory.innerHTML = '<p class="text-grayLight text-center mt-4">Nenhuma transação recente.</p>';
+                transactionHistory.innerHTML = '<p class="text-gray-light text-center mt-4">Nenhuma transação recente.</p>';
             }
         }
 
@@ -146,83 +151,117 @@ document.addEventListener('DOMContentLoaded', () => {
             if (availableRewards.length > 0) {
                 availableRewards.forEach(reward => {
                     const rewardDiv = document.createElement('div');
-                    rewardDiv.classList.add('bg-grayDark', 'p-5', 'rounded-lg', 'border', 'border-grayMedium', 'text-center');
+                    rewardDiv.classList.add('reward-item'); // Usando a nova classe CSS
                     rewardDiv.innerHTML = `
-                        <i class="${reward.icon} text-5xl text-accent mb-3"></i>
-                        <h4 class="font-bold text-xl text-primary mb-2">${reward.name}</h4>
-                        <p class="text-grayLight mb-4">${reward.description}</p>
-                        <p class="text-accent font-bold text-lg mb-4">${reward.cost} Pontos</p>
-                        <button class="bg-accent hover:bg-accentDark text-secondary font-bold py-2 px-5 rounded-full transition duration-300 btn-shine redeem-reward-btn" data-reward-id="${reward.id}" data-reward-name="${reward.name}" data-reward-cost="${reward.cost}" data-reward-description="${reward.description}">
+                        <i class="${reward.icon} reward-icon mb-3"></i>
+                        <h4 class="reward-name">${reward.name}</h4>
+                        <p class="reward-description">${reward.description}</p>
+                        <p class="reward-cost">${reward.cost} Pontos</p>
+                        <button class="redeem-reward-btn btn-shine" data-reward-id="${reward.id}" data-reward-name="${reward.name}" data-reward-cost="${reward.cost}" data-reward-description="${reward.description}">
                             Resgatar
                         </button>
                     `;
                     rewardsList.appendChild(rewardDiv);
                 });
-                // Adiciona event listeners aos novos botões de resgate
-                document.querySelectorAll('.redeem-reward-btn').forEach(button => {
-                    button.addEventListener('click', openRedeemModal);
-                });
             } else {
-                rewardsList.innerHTML = '<p class="text-grayLight text-center col-span-full mt-4">Nenhuma recompensa disponível no momento.</p>';
+                rewardsList.innerHTML = '<p class="text-gray-light text-center col-span-full mt-4">Nenhuma recompensa disponível no momento.</p>';
             }
         }
     };
 
-    // --- Funções do Modal de Resgate ---
-    let selectedReward = null;
+    // --- Funções para o Modal de Links ---
+    const populateAllLinksModal = () => {
+        allLinksList.innerHTML = ''; // Limpa a lista antes de preencher
 
-    const openRedeemModal = (e) => {
-        const button = e.currentTarget;
-        selectedReward = {
-            id: button.dataset.rewardId,
-            name: button.dataset.rewardName,
-            cost: parseInt(button.dataset.rewardCost),
-            description: button.dataset.rewardDescription
-        };
+        // Coleta todos os links <a> visíveis no documento
+        const allLinks = document.querySelectorAll('a[href]:not([class*="hidden"])');
+        const uniqueLinks = new Map(); // Usar Map para garantir links únicos e manter a ordem de inserção
 
-        modalRewardName.textContent = selectedReward.name;
-        modalRewardDescription.textContent = selectedReward.description;
-        modalRewardCost.textContent = selectedReward.cost;
-        modalCurrentPoints.textContent = currentLoggedInUserData.points;
+        // Adiciona o link "Início" manualmente no topo
+        uniqueLinks.set('home', { href: '#homePage', text: 'Início' });
 
-        redeemModal.classList.remove('hidden');
-    };
+        allLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            let text = link.textContent.trim();
 
-    const closeRedeemModal = () => {
-        redeemModal.classList.add('hidden');
-        selectedReward = null;
-    };
+            // Ignorar links vazios ou âncoras internas sem texto significativo
+            if (!href || href === '#' || text === '') {
+                return;
+            }
 
-    const confirmRedeem = () => {
-        if (!selectedReward || !currentLoggedInUserData) return;
+            // Tentar obter texto mais significativo para botões ou elementos com ícones
+            if (link.tagName === 'BUTTON' && link.querySelector('i')) {
+                text = link.textContent.trim() || link.querySelector('i').className.replace('fas fa-', '').replace('-', ' ').toUpperCase();
+            } else if (text === '' && link.getAttribute('aria-label')) {
+                text = link.getAttribute('aria-label');
+            } else if (text === '' && link.querySelector('img')) {
+                text = link.querySelector('img').alt || 'Imagem Link';
+            }
 
-        if (currentLoggedInUserData.points >= selectedReward.cost) {
-            currentLoggedInUserData.points -= selectedReward.cost;
-            currentLoggedInUserData.rewardsRedeemedCount = (currentLoggedInUserData.rewardsRedeemedCount || 0) + 1;
-            
-            // Adiciona a transação de resgate
-            currentLoggedInUserData.transactions.unshift({
-                description: `Resgate de Recompensa (${selectedReward.name})`,
-                pointsChange: -selectedReward.cost,
-                date: new Date().toLocaleString()
+            // Se o texto ainda estiver vazio, usar o href como fallback
+            if (text === '') {
+                text = href;
+            }
+
+            // Normalizar o texto para evitar duplicatas como "Início" e "início"
+            const normalizedText = text.toLowerCase();
+
+            // Adiciona ao mapa se ainda não existir
+            if (!uniqueLinks.has(normalizedText)) {
+                uniqueLinks.set(normalizedText, { href, text });
+            }
+        });
+
+        // Adicionar links de formulários que não são <a> mas levam a seções
+        uniqueLinks.set('login', { href: '#loginPage', text: 'Página de Login' });
+        uniqueLinks.set('register', { href: '#registerPage', text: 'Página de Cadastro' });
+        uniqueLinks.set('clientpanel', { href: '#clientPanel', text: 'Painel do Cliente (Apenas para Teste)' });
+
+
+        // Adiciona os links ao modal
+        uniqueLinks.forEach(linkData => {
+            const listItem = document.createElement('li');
+            const anchor = document.createElement('a');
+            anchor.href = linkData.href;
+            anchor.textContent = linkData.text;
+            // Adiciona um event listener para fechar o modal ao clicar no link
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault(); // Previne o comportamento padrão do link
+                // Se for um link de seção, mostra a seção
+                if (linkData.href.startsWith('#')) {
+                    const targetId = linkData.href.substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        showSection(targetSection);
+                    }
+                } else {
+                    // Para links externos ou outros, redireciona
+                    window.location.href = linkData.href;
+                }
+                allLinksModal.classList.add('hidden');
+                document.body.classList.remove('no-scroll');
             });
-
-            updateClientPanel(currentLoggedInUserData);
-            alert(`Recompensa "${selectedReward.name}" resgatada com sucesso!`);
-            closeRedeemModal();
-        } else {
-            alert('Pontos insuficientes para resgatar esta recompensa.');
-        }
+            listItem.appendChild(anchor);
+            allLinksList.appendChild(listItem);
+        });
     };
 
     // --- Event Listeners ---
 
-    // Navegação principal
+    // Navegação principal (botões da home page)
     if (loginBtn) {
         loginBtn.addEventListener('click', () => showSection(loginPage));
     }
     if (registerBtn) {
         registerBtn.addEventListener('click', () => showSection(registerPage));
+    }
+
+    // Botões de login/registro no menu lateral (sidebar)
+    if (loginBtnSidebar) {
+        loginBtnSidebar.addEventListener('click', () => showSection(loginPage));
+    }
+    if (registerBtnSidebar) {
+        registerBtnSidebar.addEventListener('click', () => showSection(registerPage));
     }
 
     // Navegação dentro dos formulários
@@ -239,30 +278,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Menu Mobile
-    if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active'); // Alterna a classe 'active' para mostrar/esconder
-            // Adiciona/remove a classe 'no-scroll' ao body
-            document.body.classList.toggle('no-scroll');
+    // Abrir e Fechar Sidebar
+    if (openSidebarBtn) {
+        openSidebarBtn.addEventListener('click', () => {
+            sidebarMenu.classList.add('active');
+            document.body.classList.add('no-scroll'); // Desabilita o scroll do body
         });
     }
+
+    if (closeSidebarBtn) {
+        closeSidebarBtn.addEventListener('click', () => {
+            sidebarMenu.classList.remove('active');
+            document.body.classList.remove('no-scroll'); // Reabilita o scroll do body
+        });
+    }
+
+    // Fechar sidebar ao clicar em um link dentro dela
+    const sidebarLinks = sidebarMenu.querySelectorAll('a, button');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            // Apenas fechar se não for um botão de login/registro que já muda de seção
+            if (!link.classList.contains('btn')) { 
+                sidebarMenu.classList.remove('active');
+                document.body.classList.remove('no-scroll');
+            }
+        });
+    });
 
     // Logout
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            currentLoggedInUserData = null; // Limpa os dados do usuário
+            currentLoggedInUserData = null;
             alert('Você foi desconectado.');
             showSection(homePage);
         });
     }
 
-    // Adicionado: Voltar para a página inicial ao clicar no logo Valkirias
+    // Voltar para a página inicial ao clicar no logo Valkirias
     if (valkiriasLogo) {
         valkiriasLogo.addEventListener('click', () => {
             showSection(homePage);
-            window.scrollTo(0, 0); // Rola para o topo da página
+            window.scrollTo(0, 0);
         });
     }
 
@@ -278,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: '12345',
                     name: 'João Silva',
                     email: 'joao.silva@example.com',
-                    phone: '(11) 98765-4321', // Adicionado telefone para o perfil
+                    phone: '(11) 98765-4321',
                     points: 75,
                     rewardsRedeemedCount: 2,
                     transactions: [
@@ -290,7 +347,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateClientPanel(userData);
                 showSection(clientPanel);
                 // Ativa a primeira aba do dashboard por padrão
-                dashboardNavItems[0].click(); 
+                if (dashboardNavItems.length > 0) {
+                    dashboardNavItems[0].click();
+                }
             } else {
                 alert('E-mail/Telefone ou senha incorretos. Tente: teste@valkirias.com / 123');
             }
@@ -336,25 +395,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event Listeners para o modal de resgate
-    if (cancelRedeemBtn) {
-        cancelRedeemBtn.addEventListener('click', closeRedeemModal);
-    }
-    if (confirmRedeemBtn) {
-        confirmRedeemBtn.addEventListener('click', confirmRedeem);
-    }
-
     // Ativar o item do menu do dashboard e mostrar o conteúdo correspondente
     if (dashboardNavItems.length > 0) {
         dashboardNavItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 // Remove 'active' de todos os itens de navegação e esconde todos os conteúdos
-                dashboardNavItems.forEach(navItem => navItem.classList.remove('active', 'text-accent', 'font-semibold'));
+                dashboardNavItems.forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
                 dashboardContents.forEach(content => content.classList.add('hidden'));
 
                 // Adiciona 'active' ao item clicado
-                e.currentTarget.classList.add('active', 'text-accent', 'font-semibold');
+                e.currentTarget.classList.add('active');
 
                 // Mostra o conteúdo correspondente
                 const targetSectionId = e.currentTarget.dataset.section + 'Content';
@@ -366,32 +419,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Adiciona event listeners para os links do menu mobile para fechar o menu ao clicar
-    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-    mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.remove('active'); // Fecha o menu ao clicar em um link
-            document.body.classList.remove('no-scroll'); // Remove a classe no-scroll ao fechar o menu
+    // Event Listeners para o novo modal de links
+    if (showAllLinksBtn) {
+        showAllLinksBtn.addEventListener('click', () => {
+            populateAllLinksModal(); // Popula o modal com os links
+            allLinksModal.classList.remove('hidden');
+            document.body.classList.add('no-scroll'); // Desabilita o scroll do body
         });
-    });
+    }
 
-    // Função para ajustar a posição e altura do menu mobile dinamicamente
-    const adjustMobileMenuPosition = () => {
-        if (header && mobileMenu) {
-            const headerHeight = header.offsetHeight; // Obtém a altura renderizada do cabeçalho
-            const overlapPixels = 1; // Quantos pixels a barra lateral deve sobrepor o cabeçalho
+    if (closeAllLinksModalBtn) {
+        closeAllLinksModalBtn.addEventListener('click', () => {
+            allLinksModal.classList.add('hidden');
+            document.body.classList.remove('no-scroll'); // Reabilita o scroll do body
+        });
+    }
 
-            mobileMenu.style.top = `${headerHeight - overlapPixels}px`; // Move 1px para cima para sobrepor
-            mobileMenu.style.height = `calc(100% - ${headerHeight - overlapPixels}px)`; // Ajusta a altura para compensar
+    // Função para ajustar a posição e altura do menu lateral dinamicamente
+    const adjustSidebarPosition = () => {
+        if (header && sidebarMenu) {
+            const headerHeight = header.offsetHeight;
+            // A sidebar deve começar logo abaixo do header
+            sidebarMenu.style.top = `${headerHeight}px`;
+            // E ocupar o restante da altura da viewport
+            sidebarMenu.style.height = `calc(100vh - ${headerHeight}px)`;
         }
     };
 
-    // Chama a função ao carregar a página
-    adjustMobileMenuPosition();
-
-    // Chama a função ao redimensionar a janela (para lidar com rotação de tela, etc.)
-    window.addEventListener('resize', adjustMobileMenuPosition);
-
+    // Chama a função ao carregar a página e ao redimensionar a janela
+    adjustSidebarPosition();
+    window.addEventListener('resize', adjustSidebarPosition);
 
     // Inicialmente, mostra a página inicial
     showSection(homePage);
