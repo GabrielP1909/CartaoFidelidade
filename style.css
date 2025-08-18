@@ -13,42 +13,81 @@
     --gray-light: #B0B0B0; /* Cinza claro para texto secundário */
     --gray-medium: #606060; /* Cinza médio para bordas e divisores */
     --gray-dark: #303030; /* Cinza escuro para elementos de fundo sutis */
+
+    /* Novos tokens de cor para os cards (mantidos para os cards específicos) */
+    --valk-red-1: #FF3B3B;   /* vermelho principal (borda/ícone/realces) */
+    --valk-red-2: #B80000;   /* vermelho escuro para gradientes */
+    --valk-bg-1:  #151515;   /* fundo card (topo) */
+    --valk-bg-2:  #0E0E0E;   /* fundo card (base) */
+    --valk-text:  #FFFFFF;
+    --valk-muted: #C7C7C7;
+
+    /* Cores para os novos cards (adaptadas do exemplo) - AJUSTADAS PARA HARMONIA */
+    --card-bg-dark: #0F0509; /* Mais escuro, com um toque de vinho */
+    --card-bg-medium: #150A0F; /* Mais escuro, com um toque de vinho */
+    --card-border-red: #6B0000; /* Vermelho mais escuro e suave para a borda, menos vibrante */
+    --card-border-red-light: rgba(107, 0, 0, 0.5); /* Versão mais clara e suave para gradiente */
+    --card-text-color: #FFFFFF;
+    --card-description-color: hsla(0, 0%, 100%, 0.6); /* Opacidade ligeiramente reduzida para suavizar */
 }
 
 /* Estilos CSS globais */
 body {
     font-family: 'Inter', sans-serif;
-    /* Degradê de fundo aprimorado */
-    background: radial-gradient(circle at top left, rgba(211, 47, 47, 0.4) 0%, rgba(10, 10, 10, 0.9) 50%, rgba(10, 10, 10, 1) 100%), var(--dark-background);
+    /* NOVO FUNDO: Gradiente que garante preto nas bordas e vermelho no centro */
+    background: radial-gradient(ellipse at center, #300000 0%, #0A0A0A 70%, #000000 100%);
     min-height: 100vh;
+    width: 100%; /* Garante que o body ocupe 100% da largura */
     display: flex;
     flex-direction: column;
     justify-content: space-between; 
     overflow-x: hidden; /* Previne rolagem horizontal indesejada */
     color: var(--primary-color); /* Cor do texto principal */
+    padding-top: 80px; /* Garante que o conteúdo não fique escondido atrás do header fixo */
+    position: relative; /* Necessário para os pseudo-elementos */
+}
+
+/* Efeitos de sobreposição para o fundo - Ajustados para não vazar luz */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradiente radial mais sutil e centralizado, com opacidade menor */
+    background: radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.2), transparent 60%);
+    z-index: -1; /* Abaixo do conteúdo, acima do background principal */
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Camada escura para garantir que as bordas sejam sempre pretas */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)); /* Escurecimento de cima para baixo */
+    z-index: -2; /* Abaixo do ::before e do conteúdo */
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
 }
 
-/* O .container global foi removido ou redefinido para não ter max-width e padding */
-/* Ele será usado apenas para agrupar elementos, mas não para limitar a largura */
 .container {
-    /* Removido: max-width, padding-left, padding-right */
-    /* Estes serão aplicados a elementos específicos como .header-content, main, .footer-content */
+    /* Este .container é um utilitário para centralizar e limitar largura */
+    max-width: 84rem; /* max-w-7xl */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }
 
 main {
     flex-grow: 1; 
-    padding: 3rem 1.5rem; /* py-12 px-6 */
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 100%; /* mx-auto */
-    /* Adicionado para centralizar o conteúdo principal */
-    max-width: 84rem; /* Exemplo: max-w-7xl do client-panel */
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding: 3rem 0; /* Ajustado para 0 nas laterais, o .container já tem padding */
 }
 
 .text-center {
@@ -73,7 +112,7 @@ main {
     left: -75%;
     width: 50%;
     height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent); /* Opacidade reduzida para 0.15 */
     transform: skewX(-20deg);
     transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
     z-index: -1;
@@ -105,12 +144,9 @@ main {
 }
 
 /* Efeito de elevação para cards - SEMPRE ATIVO */
+/* Esta classe será aplicada aos .val-card, mas suas propriedades serão sobrescritas/complementadas */
 .card-hover-effect {
-    transform: translateY(-10px); /* Elevação */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5),
-                0 0 25px rgba(211, 47, 47, 0.6),
-                0 0 50px rgba(211, 47, 47, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Adiciona transição para suavidade */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição base */
 }
 
 /* Gradiente para barra de progresso */
@@ -133,43 +169,6 @@ main {
     border-image: linear-gradient(to bottom, var(--accent-color), var(--accent-dark-color)) 1; 
 }
 
-/* Animação de ícones no hover e pulsação constante */
-/* Aplicar a animação diretamente aos ícones dentro de .home-card-item */
-.home-card-item .icon-large { /* Seleciona especificamente os ícones grandes dentro dos cards */
-    animation: slow-pulse 2s infinite ease-in-out;
-}
-
-/* Remover a regra de hover se o efeito for constante */
-/* .icon-hover-pulse:hover i {
-    animation: slow-pulse 2s infinite ease-in-out;
-} */
-
-/* Novo estilo para o cabeçalho com gradiente */
-.header-gradient {
-    background: linear-gradient(to right, var(--secondary-color), var(--dark-surface), var(--secondary-color));
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    z-index: 50;
-    border-bottom: 1px solid rgba(211, 47, 47, 0.2);
-    width: 100%; /* Garante que o header cubra de ponta a ponta */
-}
-
-.sticky-top {
-    position: sticky;
-    top: 0;
-}
-
-/* Transições de Seção */
-.section-transition {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-}
-
-.section-transition.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 /* Animação para o modal de resgate */
 @keyframes bounce {
     0%, 100% {
@@ -187,10 +186,10 @@ main {
 /* --- REGRAS PARA O NOVO MENU LATERAL (SIDEBAR) --- */
 #sidebarMenu {
     position: fixed;
-    top: 0;
+    top: 80px; /* Começa abaixo do header fixo */
     right: -300px; /* Escondido por padrão */
     width: 300px; /* Largura da sidebar */
-    height: 100%;
+    height: calc(100vh - 80px); /* Ocupa o restante da altura da viewport */
     background-color: var(--dark-surface);
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
     transition: right 0.3s ease-in-out;
@@ -252,79 +251,108 @@ body.no-scroll {
 /* --- Componentes e Layouts --- */
 
 /* Header */
+.header-gradient {
+    position: fixed; /* Fixo no topo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px; /* Altura fixa */
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to right, var(--secondary-color), var(--dark-surface), var(--secondary-color));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(211, 47, 47, 0.2);
+    z-index: 1000;
+}
+
 .header-content {
-    padding: 0 20px; /* Ajustado para 0 20px */
-    display: flex; /* flex */
-    justify-content: space-between; /* justify-between */
-    align-items: center; /* items-center */
-    /* Removido para ocupar 100% da largura */
-    /* margin-left: auto; */
-    /* margin-right: auto; */
-    /* max-width: 84rem; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Ocupa toda a largura do container */
+    /* O padding já vem do .container global */
 }
 
 .header-logo-container {
-    display: flex; /* flex */
-    align-items: center; /* items-center */
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaçamento entre logo e texto */
 }
 
 .header-logo {
-    margin-right: 0.5rem; /* Ajustado para 0.5rem */
     width: 3rem; /* w-12 */
     height: 3rem; /* h-12 */
 }
 
 .valkirias-logo-text {
-    font-size: 20px; /* Ajustado para 20px */
-    font-weight: bold; /* Ajustado para bold */
-    color: #FFFFFF; /* Alterado para branco puro */
-    letter-spacing: 0.05em; /* tracking-wide */
-    cursor: pointer; /* cursor-pointer */
-    /* Removido efeito de brilho e sombra */
+    font-size: 28px; /* Texto Valkirias maior */
+    font-weight: bold;
+    color: #FFFFFF; /* Branco puro */
+    letter-spacing: 0.05em;
+    cursor: pointer;
     text-shadow: none; 
     transition: none;
 }
 
 .valkirias-logo-text:hover {
-    text-shadow: none; /* Removido efeito de brilho e sombra no hover */
+    text-shadow: none;
 }
 
 .nav-desktop {
-    display: none; /* hidden */
-    margin-left: auto; /* Adicionado para empurrar para a direita */
+    display: none; /* Oculto por padrão em mobile */
+    margin-left: auto; /* Empurra para a direita */
 }
 
 .nav-list-desktop {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex; /* flex */
-    gap: 1.5rem; /* Ajustado para 1.5rem */
-    align-items: center; /* Alinha os botões verticalmente */
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
 }
 
 .nav-link {
     color: var(--primary-color);
     text-decoration: none;
-    transition: color 0.3s ease; /* transition duration-300 */
+    transition: color 0.3s ease;
+    font-size: 18px; /* Link Início redimensionado */
+    padding: 8px 12px;
 }
 
 .nav-link:hover {
     color: var(--accent-color);
 }
 
-.sidebar-toggle-button { /* Novo nome para o botão de hambúrguer */
+.sidebar-toggle-button { /* Botão de hambúrguer */
     color: var(--primary-color);
-    font-size: 1.875rem; /* text-3xl */
+    font-size: 1.875rem;
     background: none;
     border: none;
     cursor: pointer;
     transition: color 0.3s ease;
-    margin-left: auto; /* Adicionado para empurrar para a direita em telas menores */
+    margin-left: auto; /* Empurra para a direita em telas menores */
 }
 
 .sidebar-toggle-button:hover {
     color: var(--accent-color);
+}
+
+.header-button { /* Botão "Todos os Links" */
+    margin-left: 1rem; /* Espaçamento do botão de hambúrguer */
+    order: 3; /* Garante que ele fique depois do nav-desktop */
+}
+
+.icon-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-button .fas.fa-bars {
+    font-size: 1.5rem;
 }
 
 /* Home Page */
@@ -348,64 +376,136 @@ body.no-scroll {
     margin-bottom: 2.5rem; /* mb-10 */
 }
 
-.home-cards-container {
-    background-color: var(--dark-surface);
-    border-radius: 0.75rem; /* rounded-xl */
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* shadow-xl */
-    padding: 2.5rem; /* p-10 */
-    margin-bottom: 3rem; /* mb-12 */
-    border: 1px solid var(--gray-dark); /* border border-grayDark */
+/* Container para os novos cards (grid) */
+.val-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Uma coluna por padrão */
+    gap: 24px; /* Espaçamento entre os cards */
+    margin-bottom: 3rem; /* Margem inferior para separar dos botões */
+    justify-items: center; /* Centraliza os cards na grid */
 }
 
-.home-cards-grid {
-    display: grid; /* grid */
-    grid-template-columns: 1fr; /* grid-cols-1 */
-    gap: 3rem; /* Aumentado de 2rem para 3rem para mais separação */
+/* --- Estilos para os NOVOS Cards (Compre, Acumule, Resgate) --- */
+.card {
+    max-width: 400px;
+    border: 0;
+    width: 100%;
+    margin-inline: auto;
+    /* Removido o box-shadow e background do .card original para usar o do .container-card */
 }
 
-.home-card-item {
-    /* Removido: border: 1px solid var(--gray-medium); */
-    border-radius: 0.5rem; /* rounded-lg */
-    padding: 1.5rem; /* p-6 */
-    display: flex; /* flex */
-    flex-direction: column; /* flex-col */
-    align-items: center; /* items-center */
-    justify-content: center; /* justify-center */
-    margin-bottom: 1.5rem; /* Adiciona margem inferior para separar os cards em telas menores */
-    background-color: var(--dark-surface-light); /* Adicionado para dar um fundo aos cards individuais */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil para separá-los */
-    /* Adicionado efeito de elevação para os cards da home */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.container-card {
+    position: relative;
+    border: 2px solid transparent;
+    background: linear-gradient(71deg, var(--card-bg-dark), var(--card-bg-medium), var(--card-bg-dark));
+    background-clip: padding-box;
+    border-radius: 45px;
+    padding: 40px;
+    display: flex; /* Adicionado para alinhar conteúdo */
+    flex-direction: column; /* Adicionado para alinhar conteúdo */
+    align-items: center; /* Centraliza horizontalmente */
+    text-align: center; /* Centraliza texto */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição para hover */
+    /* Adicionado para o efeito btn-shine */
+    overflow: hidden; 
+    z-index: 1; /* Garante que o brilho fique acima do fundo do card */
 }
 
-.home-card-item:hover {
-    transform: translateY(-5px); /* Elevação sutil no hover */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Sombra mais pronunciada no hover */
+/* Ajuste para o pseudo-elemento ::before do btn-shine nos cards */
+.container-card.btn-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent); /* Opacidade reduzida para 0.15 */
+    transform: skewX(-20deg);
+    transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 2; /* Garante que o brilho esteja acima do conteúdo do card */
 }
 
-/* Remova a margem inferior do último item para evitar espaço extra */
-.home-cards-grid .home-card-item:last-child {
-    margin-bottom: 0;
+
+.container-card:hover {
+    transform: translateY(-5px); /* Leve elevação no hover */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5); /* Sombra mais pronunciada */
 }
 
-.icon-large {
-    font-size: 3.125rem; /* text-5xl */
-    color: var(--accent-color);
-    margin-bottom: 1rem; /* mb-4 */
+.bg-red-box::after { /* Renomeado de .bg-yellow-box para .bg-red-box */
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    right: -1px;
+    content: "";
+    z-index: -1; /* Garante que a borda fique atrás do conteúdo e do brilho */
+    border-radius: 45px;
+    background: linear-gradient(71deg, var(--dark-background), var(--card-border-red), var(--dark-background)); /* Gradiente de borda vermelho */
 }
 
-.home-card-title {
-    font-weight: 700; /* font-bold */
-    font-size: 1.25rem; /* text-xl */
-    margin-bottom: 0.5rem; /* mb-2 */
-    color: var(--primary-color);
+.card-icon-wrapper {
+    width: 80px; /* Tamanho do wrapper do ícone */
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    border-radius: 50%; /* Ícone circular */
+    /* REMOVIDO: Fundo vermelho do ícone */
+    background-color: #121111; /* Novo fundo neutro */
+    /* REMOVIDO: Brilho sutil vermelho */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Sombra neutra */
 }
 
-.home-card-description {
-    color: var(--gray-light);
-    text-align: center;
+.card-icon-wrapper i {
+    font-size: 40px; /* Tamanho do ícone Font Awesome */
+    color: var(--primary-color); /* Cor do ícone (branco) */
 }
 
+.card-title {
+    font-weight: 600;
+    color: var(--card-text-color);
+    letter-spacing: -0.02em;
+    line-height: 40px;
+    font-style: normal;
+    font-size: 28px;
+    padding-bottom: 8px;
+    margin-top: 0; /* Resetar margem padrão */
+    margin-bottom: 0; /* Resetar margem padrão */
+}
+
+.card-description {
+    font-weight: 600;
+    line-height: 32px;
+    color: var(--card-description-color);
+    font-size: 16px;
+    max-width: 470px;
+    margin-top: 0; /* Resetar margem padrão */
+    margin-bottom: 20px; /* Espaçamento antes do CTA */
+}
+
+/* CTA (Call to Action) Button para os novos cards */
+.val-card__cta {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid var(--accent-color); /* Borda vermelha */
+    border-radius: 9999px; /* rounded-full */
+    color: var(--primary-color); /* Texto branco */
+    background-color: transparent; /* Fundo transparente */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.val-card__cta:hover {
+    background-color: var(--accent-color); /* Fundo preenchido no hover */
+    color: var(--secondary-color); /* Texto escuro no hover */
+    border-color: var(--accent-dark-color);
+}
+
+
+/* --- Botões Gerais (Restaurados) --- */
 .home-buttons-container {
     display: flex; /* flex */
     flex-direction: column; /* flex-col */
@@ -462,7 +562,7 @@ body.no-scroll {
     border-radius: 0.5rem; /* Borda mais quadrada */
 }
 
-/* Forms (Login/Register) */
+/* Forms (Login/Register) - Restaurados */
 .form-section {
     max-width: 28rem; /* max-w-md */
     margin-left: auto;
@@ -545,7 +645,7 @@ body.no-scroll {
     font-size: 1rem; /* text-base */
 }
 
-/* Client Panel */
+/* Client Panel - Restaurados */
 .client-panel {
     max-width: 84rem; /* max-w-7xl */
     margin-left: auto;
@@ -720,7 +820,7 @@ body.no-scroll {
     font-size: 1.125rem; /* text-lg */
 }
 
-/* Transaction History */
+/* Transaction History - Restaurados */
 .transaction-history-list {
     gap: 1rem; /* space-y-4 */
 }
@@ -761,7 +861,7 @@ body.no-scroll {
     font-size: 0.875rem; /* text-sm */
 }
 
-/* Rewards List */
+/* Rewards List - Restaurados */
 .rewards-grid {
     display: grid; /* grid */
     grid-template-columns: 1fr; /* grid-cols-1 */
@@ -816,7 +916,7 @@ body.no-scroll {
     background-color: var(--accent-dark-color);
 }
 
-/* Profile */
+/* Profile - Restaurados */
 .profile-details {
     gap: 1rem; /* space-y-4 */
     font-size: 1.125rem; /* text-lg */
@@ -832,25 +932,23 @@ body.no-scroll {
     font-size: 1rem; /* text-base */
 }
 
-/* Modal (Classes mantidas, mas não usadas no HTML) */
+/* Modal - Restaurados */
 .modal-overlay {
-    display: none !important; /* Adiciona !important para garantir precedência */
+    display: none; /* Controlado por JS */
     position: fixed;
     inset: 0; /* top:0; right:0; bottom:0; left:0; */
     background-color: rgba(0, 0, 0, 0.75); /* bg-black bg-opacity-75 */
-    /* display: flex; Removido daqui, será controlado por JS e :not(.hidden) */
     align-items: center; /* items-center */
     justify-content: center; /* justify-center */
     z-index: 50;
 }
 
 .modal-overlay.hidden {
-    display: none !important; /* Mantém a regra para a classe hidden */
+    display: none;
 }
 
-/* Quando o modal deve ser visível, a classe 'hidden' é removida e o JS pode adicionar 'display: flex' */
 .modal-overlay:not(.hidden) {
-    display: flex !important;
+    display: flex; /* Mostra quando a classe hidden é removida */
 }
 
 .modal-content {
@@ -918,32 +1016,65 @@ body.no-scroll {
     background-color: var(--gray-medium);
 }
 
-/* Footer */
+/* Estilos específicos para a lista de links no modal "Todos os Links" */
+.all-links-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0; /* Adiciona margem superior e inferior */
+    text-align: left; /* Alinha o texto dos links à esquerda */
+}
+
+.all-links-list li {
+    margin-bottom: 0.75rem; /* Espaçamento entre os itens da lista */
+}
+
+.all-links-list li:last-child {
+    margin-bottom: 0;
+}
+
+.all-links-list a {
+    display: block; /* Faz o link ocupar toda a largura do item da lista */
+    padding: 0.5rem 0; /* Padding vertical para os links */
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.all-links-list a:hover {
+    color: var(--accent-color);
+}
+
+/* Ajuste para o botão de fechar dentro do modal de links */
+#allLinksModal .close-sidebar-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem; /* Ajusta o tamanho para o contexto do modal */
+    margin-bottom: 0; /* Remove a margem inferior que estava empurrando o título */
+}
+
+
+/* Footer - Restaurado e Centralizado */
 .footer {
     background-color: var(--dark-surface);
     padding-top: 2rem; /* py-8 */
     margin-top: 3rem; /* mt-12 */
     border-top: 1px solid var(--gray-dark); /* border-t border-grayDark */
-    width: 100%; /* Garante que o footer cubra de ponta a ponta */
+    width: 100%;
 }
 
 .footer-content {
-    text-align: center;
+    text-align: center; /* Centraliza o texto por padrão */
     color: var(--gray-light);
     display: grid; /* grid */
-    grid-template-columns: 1fr; /* grid-cols-1 */
+    grid-template-columns: 1fr; /* Uma coluna por padrão */
     gap: 2rem; /* gap-8 */
     margin-bottom: 2rem; /* mb-8 */
-    /* Adicionado para centralizar o conteúdo do rodapé */
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 84rem; /* Mesma largura máxima do main */
-    padding-left: 1.5rem; /* Mantém o padding nas laterais */
-    padding-right: 1.5rem; /* Mantém o padding nas laterais */
+    /* O padding e max-width já vêm do .container global */
 }
 
 .footer-section {
-    text-align: center;
+    text-align: center; /* Garante que as seções do footer estejam centralizadas em mobile */
 }
 
 .footer-title {
@@ -967,6 +1098,14 @@ body.no-scroll {
     padding: 0;
 }
 
+.footer-list li {
+    margin-bottom: 0.5rem; /* Espaçamento entre itens da lista */
+}
+
+.footer-list li:last-child {
+    margin-bottom: 0;
+}
+
 .footer-link {
     color: var(--gray-light);
     text-decoration: none;
@@ -980,7 +1119,7 @@ body.no-scroll {
 
 .social-links {
     display: flex; /* flex */
-    justify-content: center; /* justify-center */
+    justify-content: center; /* Centraliza os ícones sociais em mobile */
     gap: 1rem; /* space-x-4 */
     font-size: 1.5rem; /* text-2xl */
 }
@@ -997,6 +1136,7 @@ body.no-scroll {
 .footer-copyright {
     font-size: 0.875rem; /* text-sm */
     text-align: center;
+    padding-bottom: 1rem; /* Espaçamento inferior */
 }
 
 /* --- Media Queries para Responsividade --- */
@@ -1015,9 +1155,7 @@ body.no-scroll {
     }
 
     main {
-        max-width: 75rem; /* max-w-6xl */
-        padding-left: 2rem; /* px-8 */
-        padding-right: 2rem; /* px-8 */
+        padding: 3rem 0; /* Mantém 0 nas laterais, o .container já tem padding */
     }
 
     .home-page-content {
@@ -1032,16 +1170,9 @@ body.no-scroll {
         font-size: 1.5rem; /* md:text-2xl */
     }
 
-    .home-cards-grid {
-        grid-template-columns: repeat(3, 1fr); /* md:grid-cols-3 */
-        gap: 2rem; /* Pode manter um gap menor para telas maiores, ou ajustar conforme preferir */
-    }
-    .home-card-item {
-        margin-bottom: 0; /* Remove a margem inferior em telas maiores */
-    }
-
-    .home-card-title {
-        font-size: 1.5rem; /* md:text-2xl */
+    .val-cards-grid { /* Ajuste para grid em telas maiores */
+        grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+        gap: 24px; /* Espaçamento entre os cards */
     }
 
     .home-buttons-container {
@@ -1052,10 +1183,8 @@ body.no-scroll {
     /* Em telas maiores, vamos dar uma largura fixa ou máxima para os botões */
     .home-buttons-container .btn {
         width: 220px; /* Ajuste este valor para a largura desejada em telas maiores */
-        /* Ou use max-width para que eles se ajustem, mas não passem de um certo ponto */
-        /* max-width: 250px; */ 
-        flex-grow: 0; /* Impede que eles cresçam para preencher o espaço, mantendo a largura definida */
-        flex-shrink: 0; /* Impede que eles encolham */
+        flex-grow: 0;
+        flex-shrink: 0;
     }
 
     .form-section {
@@ -1156,173 +1285,14 @@ body.no-scroll {
     }
 
     .footer-section {
-        text-align: left; /* md:text-left */
-    }
-
-    .footer-text {
-        font-size: 1rem; /* md:text-base */
-    }
-
-    .footer-link {
-        font-size: 1rem; /* md:text-base */
+        text-align: left; /* Alinha à esquerda em desktop */
     }
 
     .social-links {
-        justify-content: flex-start; /* md:justify-start */
+        justify-content: flex-start; /* Alinha à esquerda em desktop */
     }
 }
 
 @media (min-width: 1024px) { /* lg: */
     /* Adicione estilos específicos para telas maiores se necessário */
-}
-
-/* ==== MODIFICAÇÕES CHATGPT ==== */
-
-/* Header fixo no topo */
-.header-gradient {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    background: linear-gradient(to right, var(--secondary-color), var(--dark-surface), var(--secondary-color));
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    border-bottom: 1px solid rgba(211, 47, 47, 0.2);
-    z-index: 1000;
-}
-
-/* Garante que o conteúdo não fique escondido atrás do header */
-body {
-    padding-top: 80px;
-}
-
-/* Espaçamento entre logo e link Início */
-.header-logo-container {
-    gap: 20px; /* aumenta espaço */
-}
-
-/* Texto Valkirias maior */
-.valkirias-logo-text {
-    font-size: 28px;
-    color: #FFFFFF !important;
-}
-
-/* Link Início redimensionado */
-.nav-link {
-    font-size: 18px;
-    padding: 8px 12px;
-}
-
-/* Oculta botões Entrar e Cadastrar no cabeçalho */
-.nav-desktop .btn,
-.nav-desktop .btn-primary,
-.nav-desktop .btn-secondary {
-    display: none !important;
-}
-
-/* Estilo para o novo botão "Todos os Links" no cabeçalho */
-.header-button {
-    margin-left: auto; /* Empurra o botão para a direita */
-    order: 3; /* Garante que ele fique depois do nav-desktop */
-}
-
-/* Estilos para o botão com ícone */
-.icon-button {
-    padding: 0.5rem 0.75rem; /* Ajusta o padding para o ícone */
-    font-size: 1.2rem; /* Aumenta o tamanho do ícone */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Ajuste específico para o ícone de 3 riscos dentro do botão */
-.icon-button .fas.fa-bars {
-    font-size: 1.5rem; /* Aumenta o tamanho do ícone de barras para ser mais visível */
-}
-
-
-/* Estilos para o modal de todos os links */
-.all-links-list {
-    list-style: none;
-    padding: 0;
-    margin: 1.5rem 0;
-    max-height: 60vh; /* Limita a altura para permitir rolagem */
-    overflow-y: auto; /* Adiciona rolagem se o conteúdo for muito grande */
-    text-align: left;
-    display: grid; /* Adiciona grid para layout em colunas */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Colunas responsivas */
-    gap: 1rem; /* Espaçamento entre os itens */
-}
-
-.all-links-list li {
-    margin-bottom: 0; /* Remove margin-bottom padrão */
-}
-
-.all-links-list a {
-    display: block;
-    padding: 0.75rem 1rem; /* Aumenta o padding para melhor clique */
-    background-color: var(--gray-dark);
-    border-radius: 0.5rem;
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Adiciona transform para hover */
-    font-weight: 600; /* Deixa o texto mais encorpado */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-}
-
-.all-links-list a:hover {
-    background-color: var(--accent-color); /* Cor de destaque no hover */
-    color: var(--secondary-color); /* Texto escuro no hover */
-    transform: translateY(-3px); /* Efeito de elevação no hover */
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* Sombra mais pronunciada no hover */
-}
-
-/* Ajuste para o botão de fechar do modal */
-.modal-content .close-sidebar-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    margin-bottom: 0; /* Remove margin-bottom extra */
-    z-index: 10; /* Garante que o botão esteja acima de outros elementos no modal */
-    font-size: 2rem; /* Aumenta o tamanho do 'x' para facilitar o clique */
-    color: var(--gray-light); /* Cor do 'x' */
-}
-
-.modal-content .close-sidebar-button:hover {
-    color: var(--accent-color); /* Cor ao passar o mouse */
-}
-
-/* Media query para ocultar o botão em telas menores se necessário, ou ajustar seu posicionamento */
-@media (max-width: 767px) { /* Em telas pequenas */
-    .header-button {
-        display: none; /* Oculta o botão "Todos os Links" no cabeçalho em mobile */
-    }
-}
-
-/* Ajustes para o header-content para alinhar os itens */
-.header-content {
-    display: flex;
-    justify-content: space-between; /* Distribui o espaço entre os itens */
-    align-items: center;
-    width: 100%; /* Garante que o conteúdo do header ocupe toda a largura */
-    max-width: 84rem; /* Limita a largura máxima para consistência */
-    margin: 0 auto; /* Centraliza o conteúdo do header */
-    padding: 0 1.5rem; /* Adiciona padding nas laterais */
-}
-
-/* Garante que o nav-desktop e o botão de links fiquem à direita */
-.nav-desktop {
-    display: flex; /* Garante que o nav-desktop seja um flex container */
-    align-items: center;
-    margin-left: auto; /* Empurra para a direita */
-    gap: 1rem; /* Espaçamento entre os itens do nav-desktop */
-}
-
-/* Ajuste para o botão de hambúrguer em mobile */
-@media (max-width: 767px) {
-    .sidebar-toggle-button {
-        margin-left: auto; /* Empurra para a direita em mobile */
-    }
 }

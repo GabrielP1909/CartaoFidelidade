@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');
 
     const clientName = document.getElementById('clientName');
-    const clientEmail = document = document.getElementById('clientEmail');
+    const clientEmail = document.getElementById('clientEmail'); // Corrigido: removido ' = document' duplicado
     const qrcodeDiv = document.getElementById('qrcode');
     const currentPoints = document.getElementById('currentPoints');
     const pointsToNextReward = document.getElementById('pointsToNextReward');
@@ -46,11 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileEmail = document.getElementById('profileEmail');
     const profilePhone = document.getElementById('profilePhone');
 
-    // Elementos do novo modal de links
+    // Elementos do novo modal de links (botão de "settings")
     const showAllLinksBtn = document.getElementById('showAllLinksBtn');
     const allLinksModal = document.getElementById('allLinksModal');
     const closeAllLinksModalBtn = document.getElementById('closeAllLinksModalBtn');
     const allLinksList = document.getElementById('allLinksList');
+
+    // Elementos dos modais dos cards "Compre", "Acumule", "Resgate"
+    const openModalBtns = document.querySelectorAll('.open-modal-btn');
+    const closeModalBtns = document.querySelectorAll('.close-modal-btn');
 
 
     let currentLoggedInUserData = null; // Variável para armazenar os dados do usuário logado
@@ -169,11 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Funções para o Modal de Links ---
+    // --- Funções para o Modal de Links (Botão de "Settings") ---
     const populateAllLinksModal = () => {
         allLinksList.innerHTML = ''; // Limpa a lista antes de preencher
 
         // Coleta todos os links <a> visíveis no documento
+        // Filtra links que não são apenas '#' e que têm texto ou aria-label
         const allLinks = document.querySelectorAll('a[href]:not([class*="hidden"])');
         const uniqueLinks = new Map(); // Usar Map para garantir links únicos e manter a ordem de inserção
 
@@ -186,14 +191,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Ignorar links vazios ou âncoras internas sem texto significativo
             if (!href || href === '#' || text === '') {
-                return;
+                // Tenta pegar texto de aria-label se o textContent estiver vazio
+                if (link.getAttribute('aria-label')) {
+                    text = link.getAttribute('aria-label');
+                } else if (link.querySelector('img')) {
+                    text = link.querySelector('img').alt || 'Imagem Link';
+                } else {
+                    return; // Se ainda não tiver texto, ignora
+                }
             }
 
             // Tentar obter texto mais significativo para botões ou elementos com ícones
             if (link.tagName === 'BUTTON' && link.querySelector('i')) {
                 text = link.textContent.trim() || link.querySelector('i').className.replace('fas fa-', '').replace('-', ' ').toUpperCase();
             } else if (text === '' && link.getAttribute('aria-label')) {
-                text = link.getAttribute('aria-label');
+                    text = link.getAttribute('aria-label');
             } else if (text === '' && link.querySelector('img')) {
                 text = link.querySelector('img').alt || 'Imagem Link';
             }
@@ -419,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event Listeners para o novo modal de links
+    // Event Listeners para o modal de "Todos os Links" (botão de "settings")
     if (showAllLinksBtn) {
         showAllLinksBtn.addEventListener('click', () => {
             populateAllLinksModal(); // Popula o modal com os links
@@ -434,6 +446,29 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('no-scroll'); // Reabilita o scroll do body
         });
     }
+
+    // Event Listeners para os modais dos cards "Compre", "Acumule", "Resgate"
+    openModalBtns.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const modalId = e.currentTarget.dataset.modalTarget;
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.classList.add('no-scroll');
+            }
+        });
+    });
+
+    closeModalBtns.forEach(button => {
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal-overlay');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.classList.remove('no-scroll');
+            }
+        });
+    });
 
     // Função para ajustar a posição e altura do menu lateral dinamicamente
     const adjustSidebarPosition = () => {

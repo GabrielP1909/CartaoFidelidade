@@ -68,24 +68,41 @@
                 <h2 class="home-title">Cartão Fidelidade Valkirias</h2>
                 <p class="home-subtitle">Acumule pontos a cada compra e ganhe recompensas exclusivas!</p>
                 
-                <!-- Adicionada a classe 'card-hover-effect' aqui para o container dos cards -->
-                <div class="home-cards-container card-hover-effect">
-                    <div class="home-cards-grid">
-                        <!-- REMOVIDA A CLASSE 'icon-hover-pulse' DOS ITENS ABAIXO -->
-                        <div class="home-card-item">
-                            <i class="fas fa-pizza-slice icon-large accent-color mb-4"></i>
-                            <h3 class="home-card-title">Compre</h3>
-                            <p class="home-card-description">Faça seus pedidos na pizzaria</p>
+                <!-- Cards Independentes com nova estética -->
+                <div class="val-cards-grid">
+                    <!-- Card 1: Compre -->
+                    <div class="card">
+                        <div class="container-card bg-red-box btn-shine">
+                            <div class="card-icon-wrapper">
+                                <i class="fas fa-pizza-slice"></i>
+                            </div>
+                            <p class="card-title">Compre</p>
+                            <p class="card-description">Faça seus pedidos na pizzaria e comece a acumular pontos.</p>
+                            <a class="val-card__cta open-modal-btn" href="#" data-modal-target="compreModal">Saiba Mais</a>
                         </div>
-                        <div class="home-card-item">
-                            <i class="fas fa-star icon-large accent-color mb-4"></i>
-                            <h3 class="home-card-title">Acumule</h3>
-                            <p class="home-card-description">Some e marque pontos no nosso cartão fidelidade</p>
+                    </div>
+
+                    <!-- Card 2: Acumule -->
+                    <div class="card">
+                        <div class="container-card bg-red-box btn-shine">
+                            <div class="card-icon-wrapper">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="card-title">Acumule</p>
+                            <p class="card-description">Some e marque pontos no nosso cartão fidelidade digital.</p>
+                            <a class="val-card__cta open-modal-btn" href="#" data-modal-target="acumuleModal">Saiba Mais</a>
                         </div>
-                        <div class="home-card-item">
-                            <i class="fas fa-gift icon-large accent-color mb-4"></i>
-                            <h3 class="home-card-title">Resgate</h3>
-                            <p class="home-card-description">Troque por recompensas únicas</p>
+                    </div>
+
+                    <!-- Card 3: Resgate -->
+                    <div class="card">
+                        <div class="container-card bg-red-box btn-shine">
+                            <div class="card-icon-wrapper">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <p class="card-title">Resgate</p>
+                            <p class="card-description">Troque seus pontos por recompensas e descontos exclusivos.</p>
+                            <a class="val-card__cta open-modal-btn" href="#" data-modal-target="resgateModal">Saiba Mais</a>
                         </div>
                     </div>
                 </div>
@@ -300,7 +317,7 @@
                             <div class="profile-details">
                                 <p><span class="profile-label">Nome:</span> <span id="profileName" class="profile-value"></span></p>
                                 <p><span class="profile-label">E-mail:</span> <span id="profileEmail" class="profile-value"></span></p>
-                                <p><span class="profile-label">Telefone:</span> <span id="profilePhone" class="profile-value">Não informado</span></p>
+                                <p><span class="profile-label">Telefone:</span> <span class="profile-value">Não informado</span></p>
                                 <button class="btn btn-primary mt-6">
                                     Editar Perfil
                                 </button>
@@ -351,7 +368,40 @@
         </div>
     </div>
 
-    <!-- Link para o arquivo JavaScript externo -->
+    <!-- Modais para os Cards "Compre", "Acumule", "Resgate" -->
+    <div id="compreModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn close-sidebar-button">&times;</button>
+            <h3 class="modal-title">Como Comprar e Ganhar Pontos</h3>
+            <p class="modal-description">
+                É simples! Ao fazer qualquer pedido em nossa pizzaria, seja por telefone, aplicativo ou diretamente no balcão, informe seu CPF ou apresente seu QR Code de fidelidade. Cada compra se transforma em pontos que você pode acumular para trocar por recompensas incríveis. Quanto mais você compra, mais rápido você ganha!
+            </p>
+            <button class="btn btn-primary btn-full close-modal-btn">Entendi!</button>
+        </div>
+    </div>
+
+    <div id="acumuleModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn close-sidebar-button">&times;</button>
+            <h3 class="modal-title">Como Acumular Pontos</h3>
+            <p class="modal-description">
+                Após cada compra, seus pontos serão automaticamente registrados em seu cartão fidelidade digital. Você pode acompanhar seu saldo de pontos e seu progresso para a próxima recompensa diretamente no seu painel de cliente. Fique de olho nas promoções especiais para acelerar seu acúmulo!
+            </p>
+            <button class="btn btn-primary btn-full close-modal-btn">Entendi!</button>
+        </div>
+    </div>
+
+    <div id="resgateModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn close-sidebar-button">&times;</button>
+            <h3 class="modal-title">Como Resgatar Suas Recompensas</h3>
+            <p class="modal-description">
+                Quando você atingir a quantidade de pontos necessária para uma recompensa, basta ir até a seção "Recompensas" no seu painel de cliente e selecionar o item desejado. Apresente o código de resgate gerado no balcão da pizzaria para desfrutar de sua recompensa!
+            </p>
+            <button class="btn btn-primary btn-full close-modal-btn">Entendi!</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
