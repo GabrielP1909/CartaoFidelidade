@@ -34,43 +34,39 @@
 /* Estilos CSS globais */
 body {
     font-family: 'Inter', sans-serif;
-    /* NOVO FUNDO: Gradiente que garante preto nas bordas e vermelho no centro */
     background: radial-gradient(ellipse at center, #300000 0%, #0A0A0A 70%, #000000 100%);
     min-height: 100vh;
-    width: 100%; /* Garante que o body ocupe 100% da largura */
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
-    overflow-x: hidden; /* Previne rolagem horizontal indesejada */
-    color: var(--primary-color); /* Cor do texto principal */
-    padding-top: 80px; /* Garante que o conteúdo não fique escondido atrás do header fixo */
-    position: relative; /* Necessário para os pseudo-elementos */
+    justify-content: flex-start; 
+    overflow-x: hidden;
+    color: var(--primary-color);
+    margin: 0;
+    padding: 0; /* remove o espaço que abria a borda */
+    position: relative;
 }
 
-/* Efeitos de sobreposição para o fundo - Ajustados para não vazar luz */
-body::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
+/* Compensa o header fixo sem empurrar o fundo */
+main {
+    flex: 1;
+    padding-top: 80px; 
     width: 100%;
-    height: 100%;
-    /* Gradiente radial mais sutil e centralizado, com opacidade menor */
-    background: radial-gradient(circle at 50% 50%, #ad0f0f8f, transparent 78%);
-    z-index: -1; /* Abaixo do conteúdo, acima do background principal */
+    box-sizing: border-box;
 }
 
+/* Fundo cobre toda a tela */
+body::before,
 body::after {
     content: '';
-    position: absolute;
+    position: fixed; /* antes era absolute */
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    /* Camada escura para garantir que as bordas sejam sempre pretas */
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)); /* Escurecimento de cima para baixo */
-    z-index: -2; /* Abaixo do ::before e do conteúdo */
+    height: 100vh; /* cobre a viewport inteira */
+    z-index: -1;
 }
+
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
@@ -964,6 +960,41 @@ body.no-scroll {
     text-align: center;
     border: 1px solid var(--gray-dark); /* border border-grayDark */
     position: relative; /* Adicionado para posicionar o botão de fechar */
+    
+    /* --- NOVOS ESTILOS PARA O MODAL-CONTENT --- */
+    background: linear-gradient(145deg, var(--dark-surface), var(--dark-background)); /* Gradiente sutil */
+    border: 2px solid var(--accent-color); /* Borda mais pronunciada com a cor de destaque */
+    box-shadow: 0 0 30px rgba(211, 47, 47, 0.4), 0 0 15px rgba(0, 0, 0, 0.8); /* Sombra mais complexa com brilho vermelho */
+    transform: scale(0.95); /* Começa um pouco menor para a animação */
+    opacity: 0; /* Começa invisível para a animação */
+    animation: modal-fade-in 0.3s ease-out forwards; /* Animação de entrada */
+}
+
+/* Animação de entrada do modal */
+@keyframes modal-fade-in {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Estilo para o botão de fechar dentro do modal */
+.modal-content .close-sidebar-button {
+    position: absolute;
+    top: 0.75rem; /* Ajustado para ficar mais próximo do canto */
+    right: 0.75rem; /* Ajustado para ficar mais próximo do canto */
+    font-size: 2rem; /* Tamanho do 'x' */
+    color: var(--gray-light);
+    transition: color 0.2s ease;
+}
+
+.modal-content .close-sidebar-button:hover {
+    color: var(--accent-color);
+    transform: scale(1.1);
 }
 
 .modal-icon {
@@ -977,12 +1008,14 @@ body.no-scroll {
     font-weight: 700; /* font-bold */
     color: var(--primary-color);
     margin-bottom: 0.75rem; /* mb-3 */
+    text-shadow: 0 0 8px rgba(211, 47, 47, 0.3); /* Sombra de texto sutil */
 }
 
 .modal-description {
     color: var(--gray-light);
     margin-bottom: 1rem; /* mb-4 */
     font-size: 1rem; /* text-base */
+    line-height: 1.5; /* Melhorar legibilidade */
 }
 
 .modal-cost {
