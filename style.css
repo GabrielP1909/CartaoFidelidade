@@ -32,38 +32,43 @@
 }
 
 /* Estilos CSS globais */
+html, body {
+  height: 100%; /* Garante que html e body ocupem 100% da altura da viewport */
+  margin: 0; /* Remove margens padrão */
+}
+
 body {
     font-family: 'Inter', sans-serif;
-    background: radial-gradient(ellipse at center, #300000 0%, #0A0A0A 70%, #000000 100%);
-    min-height: 100vh;
+    background: radial-gradient(ellipse at center, #740303 0%, #0A0A0A 70%, #000000 100%);
+    min-height: 100vh; /* Garante que o body tenha no mínimo a altura da viewport */
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; 
+    display: flex; /* Usa flexbox para organizar o conteúdo */
+    flex-direction: column; /* Organiza os itens em coluna */
+    /* Removido justify-content: flex-start; pois flex: 1 no main já faz o trabalho */
     overflow-x: hidden;
     color: var(--primary-color);
-    margin: 0;
-    padding: 0; /* remove o espaço que abria a borda */
+    /* Removido margin e padding aqui, pois já estão no html, body */
     position: relative;
 }
 
 /* Compensa o header fixo sem empurrar o fundo */
-main {
-    flex: 1;
-    padding-top: 80px; 
+.main-content { /* Alterado de 'main' para '.main-content' para ser mais específico */
+    flex: 1; /* Permite que o main cresça para preencher o espaço disponível */
+    padding-top: 80px; /* Mantém o padding para o header fixo */
     width: 100%;
     box-sizing: border-box;
+    /* min-height: calc(100vh - 80px); */ /* Removido, pois flex: 1 já garante o crescimento */
 }
 
 /* Fundo cobre toda a tela */
 body::before,
 body::after {
     content: '';
-    position: fixed; /* antes era absolute */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh; /* cobre a viewport inteira */
+    height: 100vh;
     z-index: -1;
 }
 
@@ -81,10 +86,11 @@ h1, h2, h3, h4, h5, h6 {
     padding-right: 1.5rem;
 }
 
-main {
+/* Removido o padding lateral do main, pois o .container já o possui */
+/* main {
     flex-grow: 1; 
-    padding: 3rem 0; /* Ajustado para 0 nas laterais, o .container já tem padding */
-}
+    padding: 3rem 0; 
+} */
 
 .text-center {
     text-align: center;
@@ -439,7 +445,7 @@ body.no-scroll {
     content: "";
     z-index: -1; /* Garante que a borda fique atrás do conteúdo e do brilho */
     border-radius: 45px;
-    background: linear-gradient(71deg, var(--dark-background), var(--card-border-red), var(--dark-background)); /* Gradiente de borda vermelho */
+    background: linear-gradient(71deg, var(--dark-background), #800303, var(--dark-background)); /* Gradiente de borda vermelho */
 }
 
 .card-icon-wrapper {
@@ -499,7 +505,7 @@ body.no-scroll {
 
 .val-card__cta:hover {
     background-color: #a10b0bd8; /* Fundo preenchido no hover */
-    color: var(--secondary-color); /* Texto escuro no hover */
+    color: var(--primary-color); /* Texto escuro no hover */
     border-color: var(--accent-dark-color);
 }
 
@@ -1094,9 +1100,10 @@ body.no-scroll {
 .footer {
     background-color: var(--dark-surface);
     padding-top: 2rem; /* py-8 */
-    margin-top: 3rem; /* mt-12 */
+    margin-top: 0; /* Removido o margin-top para que o footer seja empurrado pelo conteúdo */
     border-top: 1px solid var(--gray-dark); /* border-t border-grayDark */
     width: 100%;
+    /* Removido position: fixed ou absolute para que ele flua normalmente */
 }
 
 .footer-content {
@@ -1190,9 +1197,10 @@ body.no-scroll {
         display: none;
     }
 
-    main {
-        padding: 3rem 0; /* Mantém 0 nas laterais, o .container já tem padding */
-    }
+    /* Removido o padding lateral do main, pois o .container já o possui */
+    /* main {
+        padding: 3rem 0; 
+    } */
 
     .home-page-content {
         max-width: 75rem; /* md:max-w-6xl */
