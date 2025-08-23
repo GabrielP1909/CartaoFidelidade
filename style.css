@@ -44,20 +44,18 @@ body {
     width: 100%;
     display: flex; /* Usa flexbox para organizar o conteúdo */
     flex-direction: column; /* Organiza os itens em coluna */
-    /* Removido justify-content: flex-start; pois flex: 1 no main já faz o trabalho */
     overflow-x: hidden;
     color: var(--primary-color);
-    /* Removido margin e padding aqui, pois já estão no html, body */
     position: relative;
 }
 
 /* Compensa o header fixo sem empurrar o fundo */
 .main-content { /* Alterado de 'main' para '.main-content' para ser mais específico */
     flex: 1; /* Permite que o main cresça para preencher o espaço disponível */
-    padding-top: 80px; /* Mantém o padding para o header fixo */
+    padding-top: 80px; /* Compensa a altura do header fixo */
     width: 100%;
     box-sizing: border-box;
-    /* min-height: calc(100vh - 80px); */ /* Removido, pois flex: 1 já garante o crescimento */
+    /* Removido min-height: 100vh; */
 }
 
 /* Fundo cobre toda a tela */
@@ -85,12 +83,6 @@ h1, h2, h3, h4, h5, h6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 }
-
-/* Removido o padding lateral do main, pois o .container já o possui */
-/* main {
-    flex-grow: 1; 
-    padding: 3rem 0; 
-} */
 
 .text-center {
     text-align: center;
@@ -146,7 +138,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Efeito de elevação para cards - SEMPRE ATIVO */
-/* Esta classe será aplicada aos .val-card, mas suas propriedades serão sobrescritas/complementadas */
 .card-hover-effect {
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição base */
 }
@@ -358,10 +349,20 @@ body.no-scroll {
 }
 
 /* Home Page */
+.home-page { /* Adicione esta classe ao seu <section id="homePage"> se ainda não tiver */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: center; /* Centraliza horizontalmente */
+    min-height: 100%; /* Garante que o flexbox ocupe a altura total do main-content */
+    text-align: center; /* Garante que o texto dentro do home-page-content seja centralizado */
+}
+
 .home-page-content {
     max-width: 48rem; /* max-w-4xl */
     margin-left: auto;
     margin-right: auto;
+    /* Removido text-align: center; daqui se já estiver no .home-page */
 }
 
 .home-title {
@@ -407,7 +408,7 @@ body.no-scroll {
     flex-direction: column; /* Adicionado para alinhar conteúdo */
     align-items: center; /* Centraliza horizontalmente */
     text-align: center; /* Centraliza texto */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição para hover */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Transição para hover */
     /* Adicionado para o efeito btn-shine */
     overflow: hidden; 
     z-index: 1; /* Garante que o brilho fique acima do fundo do card */
@@ -430,10 +431,15 @@ body.no-scroll {
     z-index: 2; /* Garante que o brilho esteja acima do conteúdo do card */
 }
 
-
 .container-card:hover {
-    transform: translateY(-6px); /* Leve elevação no hover */
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); /* Sombra mais pronunciada no hover */
+    transform: translateY(-6px) scale(1.03); /* Leve elevação e aumento de escala no hover */
+    box-shadow: 0 15px 30px rgba(211, 47, 47, 0.4), 0 0 20px rgba(211, 47, 47, 0.2); /* Sombra mais pronunciada com brilho vermelho */
+    border-color: var(--accent-color); /* Destaca a borda no hover */
+}
+
+/* Adicione esta regra para garantir que o brilho do btn-shine seja visível no hover */
+.container-card:hover.btn-shine::before {
+    left: 125%;
 }
 
 .bg-red-box::after { /* Renomeado de .bg-yellow-box para .bg-red-box */
@@ -460,6 +466,7 @@ body.no-scroll {
     background-color: #121111; /* Novo fundo neutro */
     /* REMOVIDO: Brilho sutil vermelho */
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Sombra neutra */
+    /* transition: transform 0.3s ease; REMOVIDO PARA PARALLAX */
 }
 
 .card-icon-wrapper i {
@@ -477,6 +484,7 @@ body.no-scroll {
     padding-bottom: 8px;
     margin-top: 0; /* Resetar margem padrão */
     margin-bottom: 0; /* Resetar margem padrão */
+    /* transition: transform 0.3s ease; REMOVIDO PARA PARALLAX */
 }
 
 .card-description {
@@ -487,6 +495,7 @@ body.no-scroll {
     max-width: 470px;
     margin-top: 0; /* Resetar margem padrão */
     margin-bottom: 20px; /* Espaçamento antes do CTA */
+    /* transition: transform 0.3s ease; REMOVIDO PARA PARALLAX */
 }
 
 /* CTA (Call to Action) Button para os novos cards */
@@ -501,6 +510,8 @@ body.no-scroll {
     font-weight: 600;
     font-size: 14px;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    z-index: 3; /* Garante que o botão esteja acima do brilho */
+    position: relative; /* Necessário para z-index funcionar */
 }
 
 .val-card__cta:hover {
@@ -1098,12 +1109,17 @@ body.no-scroll {
 
 /* Footer - Restaurado e Centralizado */
 .footer {
-    background-color: var(--dark-surface);
+    background-color: transparent; /* Torna o fundo transparente */
+    box-shadow: none; /* Remove a sombra */
+    
+    /* Adicionando uma borda superior sutil e uma sombra para separação */
+    border-top: 1px solid rgba(211, 47, 47, 0.1); /* Borda fina e transparente do vermelho de destaque */
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3); /* Sombra sutil para cima */
+
     padding-top: 2rem; /* py-8 */
-    margin-top: 0; /* Removido o margin-top para que o footer seja empurrado pelo conteúdo */
-    border-top: 1px solid var(--gray-dark); /* border-t border-grayDark */
     width: 100%;
-    /* Removido position: fixed ou absolute para que ele flua normalmente */
+    /* Adicionado: Margem superior para mobile */
+    margin-top: 3rem; /* Ajuste este valor conforme necessário para o espaçamento desejado */
 }
 
 .footer-content {
@@ -1182,6 +1198,74 @@ body.no-scroll {
     padding-bottom: 1rem; /* Espaçamento inferior */
 }
 
+/* Efeito de overlay para focar no card */
+.overlay-active {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente */
+    backdrop-filter: blur(0px); /* Começa sem blur */
+    z-index: 40; /* Abaixo dos modais, mas acima do conteúdo normal */
+    opacity: 0;
+    transition: opacity 0.3s ease, backdrop-filter 0.3s ease; /* Transição para o blur */
+    pointer-events: none; /* Permite cliques através do overlay por padrão */
+}
+
+.overlay-active.show {
+    opacity: 1;
+    backdrop-filter: blur(5px); /* Aplica o blur quando visível */
+    pointer-events: auto; /* Ativa cliques no overlay quando visível */
+}
+
+/* Animação de entrada para o card focado */
+@keyframes card-focus-in {
+    from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1.05) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Animação de saída para o card focado */
+@keyframes card-focus-out {
+    from {
+        transform: scale(1.05) translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+}
+
+/* Estilo para o card ativo (focado) */
+.card.active-focus {
+    z-index: 50; /* Garante que o card ativo esteja acima do overlay */
+    position: fixed; /* Fixa o card na tela para centralizá-lo */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centraliza o card */
+    animation: card-focus-in 0.3s ease-out forwards; /* Animação de entrada */
+    box-shadow: 0 20px 40px rgba(211, 47, 47, 0.6), 0 0 30px rgba(211, 47, 47, 0.4); /* Sombra mais intensa */
+}
+
+/* Classe para animação de saída */
+.card.active-focus.exit {
+    animation: card-focus-out 0.3s ease-in forwards;
+}
+
+/* Feedback visual ao clicar (active state) */
+.container-card:active {
+    transform: scale(0.98); /* Pequeno encolhimento ao clicar */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* Sombra mais suave */
+}
+
+
 /* --- Media Queries para Responsividade --- */
 
 @media (min-width: 768px) { /* md: */
@@ -1197,10 +1281,38 @@ body.no-scroll {
         display: none;
     }
 
-    /* Removido o padding lateral do main, pois o .container já o possui */
-    /* main {
-        padding: 3rem 0; 
-    } */
+    /* Ajustes para o main-content em desktop */
+    .main-content {
+        flex: 1; /* Permite que o main cresça para preencher o espaço disponível */
+        /* Removido min-height aqui, será aplicado seletivamente */
+        /* Removido display: flex, flex-direction, justify-content, align-items daqui, serão aplicados seletivamente */
+    }
+
+    /* Apenas a homePage deve ocupar 100% da altura da tela em desktop */
+    #homePage {
+        min-height: calc(100vh - 80px); /* 100% da viewport menos a altura do header */
+        display: flex; /* Para centralizar o conteúdo da homePage */
+        flex-direction: column; /* Para centralizar o conteúdo da homePage */
+        justify-content: center; /* Para centralizar o conteúdo da homePage */
+        align-items: center; /* Para centralizar o conteúdo da homePage */
+        width: 100%; /* Garante que ocupe a largura total */
+    }
+
+    /* Outras seções devem ter altura automática e o rodapé "sticky" */
+    #loginPage,
+    #registerPage,
+    #clientPanel {
+        min-height: calc(100vh - 80px - 100px); /* Exemplo: 100vh - header - altura mínima do footer */
+        /* O flex: 1 do main-content já garante que ele empurre o footer para baixo */
+        /* Se o conteúdo for menor que essa altura, o scroll aparecerá e o footer estará no final */
+        /* Se o conteúdo for maior, o scroll aparecerá e o footer estará no final */
+    }
+
+    /* Removido: Margem superior do footer para desktop */
+    .footer {
+        margin-top: 0; /* Garante que não haja margem superior extra no desktop */
+    }
+
 
     .home-page-content {
         max-width: 75rem; /* md:max-w-6xl */
@@ -1334,6 +1446,23 @@ body.no-scroll {
 
     .social-links {
         justify-content: flex-start; /* Alinha à esquerda em desktop */
+    }
+
+    /* Remove o posicionamento fixo do card focado em desktop */
+    .card.active-focus {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: translateY(-6px) scale(1.03); /* Volta ao efeito de hover */
+        animation: none; /* Remove a animação de entrada/saída */
+    }
+}
+
+@media (max-width: 767px) { /* Telas menores que 768px (mobile) */
+    .container-card:hover {
+        transform: translateY(0) scale(1); /* Remove o efeito de hover em mobile */
+        box-shadow: 0 35px 56px rgba(0, 0, 0, 0.774); /* Volta à sombra padrão */
+        border-color: transparent; /* Volta à borda padrão */
     }
 }
 

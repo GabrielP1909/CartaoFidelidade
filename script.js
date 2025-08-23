@@ -56,8 +56,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const openModalBtns = document.querySelectorAll('.open-modal-btn');
     const closeModalBtns = document.querySelectorAll('.close-modal-btn');
 
+    // Novos elementos para o efeito de foco nos cards
+    const valCardsGrid = document.querySelector('.val-cards-grid');
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay-active');
+    document.body.appendChild(overlay); // Adiciona o overlay ao body
 
     let currentLoggedInUserData = null; // Variável para armazenar os dados do usuário logado
+    let activeCard = null; // Variável para rastrear o card atualmente focado
 
     // --- Funções de Controle de Visibilidade de Seções ---
     const showSection = (sectionToShow) => {
@@ -79,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Garante que o scroll do body seja reativado ao mudar de seção
         document.body.classList.remove('no-scroll');
+        // Garante que o foco do card seja removido ao mudar de seção
+        deactivateCardFocus(activeCard);
     };
 
     // --- Funções de Atualização do Painel do Cliente (Simuladas) ---
@@ -256,6 +264,49 @@ document.addEventListener('DOMContentLoaded', () => {
             listItem.appendChild(anchor);
             allLinksList.appendChild(listItem);
         });
+    };
+
+    // --- Funções para o efeito de foco nos cards ---
+    const activateCardFocus = (cardElement) => {
+        if (activeCard && activeCard !== cardElement) {
+            deactivateCardFocus(activeCard); // Desativa o card anterior se houver
+        }
+
+        if (cardElement) {
+            // Adiciona a classe de saída ao card anterior antes de remover
+            if (activeCard) {
+                activeCard.classList.add('exit');
+                activeCard.addEventListener('animationend', function handler() {
+                    activeCard.classList.remove('active-focus', 'exit');
+                    activeCard.removeEventListener('animationend', handler);
+                });
+            }
+
+            cardElement.classList.add('active-focus');
+            cardElement.setAttribute('aria-modal', 'true'); // Acessibilidade
+            cardElement.setAttribute('role', 'dialog'); // Acessibilidade
+            overlay.classList.add('show');
+            overlay.style.pointerEvents = 'auto'; // Permite cliques no overlay para desativar
+            activeCard = cardElement;
+            document.body.classList.add('no-scroll'); // Desabilita o scroll
+        }
+    };
+
+    const deactivateCardFocus = (cardElement) => {
+        if (cardElement) {
+            cardElement.classList.add('exit'); // Adiciona a classe de saída
+            cardElement.addEventListener('animationend', function handler() {
+                cardElement.classList.remove('active-focus', 'exit');
+                cardElement.removeAttribute('aria-modal'); // Acessibilidade
+                cardElement.removeAttribute('role'); // Acessibilidade
+                cardElement.removeEventListener('animationend', handler);
+            });
+            
+            overlay.classList.remove('show');
+            overlay.style.pointerEvents = 'none'; // Desabilita cliques no overlay
+            activeCard = null;
+            document.body.classList.remove('no-scroll'); // Reabilita o scroll
+        }
     };
 
     // --- Event Listeners ---
@@ -456,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) {
                 modal.classList.remove('hidden');
                 document.body.classList.add('no-scroll');
+                deactivateCardFocus(activeCard); // Garante que o foco do card seja removido ao abrir o modal
             }
         });
     });
@@ -466,8 +518,39 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) {
                 modal.classList.add('hidden');
                 document.body.classList.remove('no-scroll');
+                deactivateCardFocus(activeCard); // Garante que o foco do card seja removido ao fechar o modal
             }
         });
+    });
+
+    // Event Listeners para os cards (para mobile)
+    if (valCardsGrid) {
+        valCardsGrid.querySelectorAll('.card').forEach(card => {
+            // Lógica de foco para mobile
+            card.addEventListener('click', (e) => {
+                // Verifica se o clique foi no botão "Saiba Mais" ou em outro lugar do card
+                if (e.target.classList.contains('open-modal-btn') || e.target.closest('.open-modal-btn')) {
+                    // Se for o botão, o modal já será aberto pelo listener existente
+                    // Não ativamos o foco do card neste caso, pois o modal já é o foco
+                    deactivateCardFocus(activeCard); // Garante que qualquer foco anterior seja removido
+                    return; 
+                }
+
+                // Se for um clique no card (mas não no botão "Saiba Mais")
+                if (window.innerWidth < 768) { // Apenas em mobile
+                    if (card.classList.contains('active-focus')) {
+                        deactivateCardFocus(card);
+                    } else {
+                        activateCardFocus(card);
+                    }
+                }
+            });
+        });
+    }
+
+    // Event Listener para o overlay (para desativar o foco ao clicar fora do card)
+    overlay.addEventListener('click', () => {
+        deactivateCardFocus(activeCard);
     });
 
     // Função para ajustar a posição e altura do menu lateral dinamicamente
@@ -483,7 +566,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Chama a função ao carregar a página e ao redimensionar a janela
     adjustSidebarPosition();
-    window.addEventListener('resize', adjustSidebarPosition);
+    window.addEventListener('resize', () => {
+        adjustSidebarPosition();
+        // Remove o foco do card se a tela for redimensionada para desktop
+        if (window.innerWidth >= 768 && activeCard) {
+            deactivateCardFocus(activeCard);
+        }
+    });
 
     // Inicialmente, mostra a página inicial
     showSection(homePage);
