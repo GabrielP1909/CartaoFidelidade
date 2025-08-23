@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');
 
     const clientName = document.getElementById('clientName');
-    const clientEmail = document.getElementById('clientEmail'); // Corrigido: removido ' = document' duplicado
+    const clientEmail = document.getElementById('clientEmail');
     const qrcodeDiv = document.getElementById('qrcode');
     const currentPoints = document.getElementById('currentPoints');
     const pointsToNextReward = document.getElementById('pointsToNextReward');
@@ -56,14 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const openModalBtns = document.querySelectorAll('.open-modal-btn');
     const closeModalBtns = document.querySelectorAll('.close-modal-btn');
 
-    // Novos elementos para o efeito de foco nos cards
+    // Novos elementos para o efeito de foco nos cards (valCardsGrid é mantido)
     const valCardsGrid = document.querySelector('.val-cards-grid');
-    const overlay = document.createElement('div');
-    overlay.classList.add('overlay-active');
-    document.body.appendChild(overlay); // Adiciona o overlay ao body
-
-    let currentLoggedInUserData = null; // Variável para armazenar os dados do usuário logado
-    let activeCard = null; // Variável para rastrear o card atualmente focado
 
     // --- Funções de Controle de Visibilidade de Seções ---
     const showSection = (sectionToShow) => {
@@ -85,13 +79,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Garante que o scroll do body seja reativado ao mudar de seção
         document.body.classList.remove('no-scroll');
-        // Garante que o foco do card seja removido ao mudar de seção
-        deactivateCardFocus(activeCard);
+        
+        // Ao mudar de seção, remove o efeito 'is-in-view' de todos os cards
+        // para garantir um estado limpo ao retornar à homePage
+        if (valCardsGrid) {
+            valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
+                cardContainer.classList.remove('is-in-view');
+            });
+        }
     };
 
     // --- Funções de Atualização do Painel do Cliente (Simuladas) ---
     const updateClientPanel = (userData) => {
-        currentLoggedInUserData = userData; // Armazena os dados do usuário
+        // Variável para armazenar os dados do usuário logado (mantida localmente na função)
+        let currentLoggedInUserData = userData; 
 
         if (clientName) clientName.textContent = userData.name;
         if (clientEmail) clientEmail.textContent = userData.email;
@@ -266,46 +267,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- Funções para o efeito de foco nos cards ---
-    const activateCardFocus = (cardElement) => {
-        if (activeCard && activeCard !== cardElement) {
-            deactivateCardFocus(activeCard); // Desativa o card anterior se houver
+    // --- Intersection Observer para Cards (Ativado APENAS em mobile e foca o mais centralizado) ---
+    let cardObserver; // Declarar fora para poder ser acessado no resize
+    let currentActiveCard = null; // Para rastrear o card atualmente ativo
+
+    const setupCardObserver = () => {
+        // Desconecta o observador existente se houver
+        if (cardObserver) {
+            cardObserver.disconnect();
         }
 
-        if (cardElement) {
-            // Adiciona a classe de saída ao card anterior antes de remover
-            if (activeCard) {
-                activeCard.classList.add('exit');
-                activeCard.addEventListener('animationend', function handler() {
-                    activeCard.classList.remove('active-focus', 'exit');
-                    activeCard.removeEventListener('animationend', handler);
+        if (window.innerWidth < 768) { // Ativar apenas em mobile
+            const handleCardIntersection = (entries) => {
+                let bestCard = null;
+                let minDistanceToCenter = Infinity;
+                const viewportCenterY = window.innerHeight / 2;
+
+                entries.forEach(entry => {
+                    const cardElement = entry.target;
+                    const cardContainer = cardElement.querySelector('.container-card');
+
+                    if (!cardContainer) return;
+
+                    // Se o card não está mais intersectando, remove a classe
+                    if (!entry.isIntersecting) {
+                        cardContainer.classList.remove('is-in-view');
+                        return;
+                    }
+
+                    // Calcula a distância do centro do card para o centro da viewport
+                    const cardRect = cardElement.getBoundingClientRect();
+                    const cardCenterY = cardRect.top + cardRect.height / 2;
+                    const distanceToCenter = Math.abs(cardCenterY - viewportCenterY);
+
+                    // Se este card está mais próximo do centro, ele é o "melhor" até agora
+                    if (distanceToCenter < minDistanceToCenter) {
+                        minDistanceToCenter = distanceToCenter;
+                        bestCard = cardContainer;
+                    }
+                });
+
+                // Ativa o melhor card e desativa os outros
+                if (bestCard && bestCard !== currentActiveCard) {
+                    // Desativa o card anterior, se houver
+                    if (currentActiveCard) {
+                        currentActiveCard.classList.remove('is-in-view');
+                    }
+                    // Ativa o novo melhor card
+                    bestCard.classList.add('is-in-view');
+                    currentActiveCard = bestCard;
+                } else if (!bestCard && currentActiveCard) {
+                    // Se nenhum card está mais visível o suficiente, desativa o último ativo
+                    currentActiveCard.classList.remove('is-in-view');
+                    currentActiveCard = null;
+                }
+            };
+
+            // Observa todos os cards com um threshold que detecta qualquer visibilidade
+            // A lógica de centralidade será feita dentro do callback
+            const cardObserverOptions = {
+                root: null, // viewport como root
+                rootMargin: '0px',
+                threshold: Array.from({length: 101}, (v, i) => i / 100) // Observa de 0% a 100% de visibilidade
+            };
+
+            cardObserver = new IntersectionObserver(handleCardIntersection, cardObserverOptions);
+
+            // Observa cada card
+            if (valCardsGrid) {
+                valCardsGrid.querySelectorAll('.card').forEach(card => {
+                    cardObserver.observe(card);
                 });
             }
-
-            cardElement.classList.add('active-focus');
-            cardElement.setAttribute('aria-modal', 'true'); // Acessibilidade
-            cardElement.setAttribute('role', 'dialog'); // Acessibilidade
-            overlay.classList.add('show');
-            overlay.style.pointerEvents = 'auto'; // Permite cliques no overlay para desativar
-            activeCard = cardElement;
-            document.body.classList.add('no-scroll'); // Desabilita o scroll
-        }
-    };
-
-    const deactivateCardFocus = (cardElement) => {
-        if (cardElement) {
-            cardElement.classList.add('exit'); // Adiciona a classe de saída
-            cardElement.addEventListener('animationend', function handler() {
-                cardElement.classList.remove('active-focus', 'exit');
-                cardElement.removeAttribute('aria-modal'); // Acessibilidade
-                cardElement.removeAttribute('role'); // Acessibilidade
-                cardElement.removeEventListener('animationend', handler);
-            });
-            
-            overlay.classList.remove('show');
-            overlay.style.pointerEvents = 'none'; // Desabilita cliques no overlay
-            activeCard = null;
-            document.body.classList.remove('no-scroll'); // Reabilita o scroll
+        } else {
+            // Em desktop, garante que a classe 'is-in-view' seja removida se estiver presente
+            if (valCardsGrid) {
+                valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
+                    cardContainer.classList.remove('is-in-view');
+                });
+            }
+            currentActiveCard = null; // Reseta o card ativo em desktop
         }
     };
 
@@ -372,7 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            currentLoggedInUserData = null;
             alert('Você foi desconectado.');
             showSection(homePage);
         });
@@ -441,20 +481,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Simulação de Adicionar Pontos (Botão Admin)
     if (addPointsBtn) {
         addPointsBtn.addEventListener('click', () => {
-            if (!currentLoggedInUserData) {
-                alert('Nenhum usuário logado para adicionar pontos.');
+            const currentPointsElement = document.getElementById('currentPoints');
+            if (!currentPointsElement) {
+                alert('Nenhum usuário logado ou painel não carregado para adicionar pontos.');
                 return;
             }
-            let current = currentLoggedInUserData.points;
-            current += 10;
-            currentLoggedInUserData.points = current;
-            currentLoggedInUserData.transactions.unshift({
-                description: 'Pontos adicionados (Admin)',
-                pointsChange: 10,
-                date: new Date().toLocaleString()
-            });
-            updateClientPanel(currentLoggedInUserData);
-            alert(`10 pontos adicionados! Total: ${current}`);
+            let currentPointsValue = parseInt(currentPointsElement.textContent);
+            currentPointsValue += 10;
+            currentPointsElement.textContent = currentPointsValue;
+            alert(`10 pontos adicionados! Total: ${currentPointsValue}`);
         });
     }
 
@@ -507,7 +542,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) {
                 modal.classList.remove('hidden');
                 document.body.classList.add('no-scroll');
-                deactivateCardFocus(activeCard); // Garante que o foco do card seja removido ao abrir o modal
+                // Ao abrir um modal, remove o efeito 'is-in-view' de todos os cards
+                if (valCardsGrid) {
+                    valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
+                        cardContainer.classList.remove('is-in-view');
+                    });
+                }
+                currentActiveCard = null; // Garante que nenhum card esteja ativo enquanto o modal está aberto
             }
         });
     });
@@ -518,39 +559,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) {
                 modal.classList.add('hidden');
                 document.body.classList.remove('no-scroll');
-                deactivateCardFocus(activeCard); // Garante que o foco do card seja removido ao fechar o modal
+                // Ao fechar um modal, re-setup o observer para que o efeito volte se o card estiver visível
+                setupCardObserver(); 
             }
         });
-    });
-
-    // Event Listeners para os cards (para mobile)
-    if (valCardsGrid) {
-        valCardsGrid.querySelectorAll('.card').forEach(card => {
-            // Lógica de foco para mobile
-            card.addEventListener('click', (e) => {
-                // Verifica se o clique foi no botão "Saiba Mais" ou em outro lugar do card
-                if (e.target.classList.contains('open-modal-btn') || e.target.closest('.open-modal-btn')) {
-                    // Se for o botão, o modal já será aberto pelo listener existente
-                    // Não ativamos o foco do card neste caso, pois o modal já é o foco
-                    deactivateCardFocus(activeCard); // Garante que qualquer foco anterior seja removido
-                    return; 
-                }
-
-                // Se for um clique no card (mas não no botão "Saiba Mais")
-                if (window.innerWidth < 768) { // Apenas em mobile
-                    if (card.classList.contains('active-focus')) {
-                        deactivateCardFocus(card);
-                    } else {
-                        activateCardFocus(card);
-                    }
-                }
-            });
-        });
-    }
-
-    // Event Listener para o overlay (para desativar o foco ao clicar fora do card)
-    overlay.addEventListener('click', () => {
-        deactivateCardFocus(activeCard);
     });
 
     // Função para ajustar a posição e altura do menu lateral dinamicamente
@@ -566,12 +578,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Chama a função ao carregar a página e ao redimensionar a janela
     adjustSidebarPosition();
+    setupCardObserver(); // Configura o observer na carga inicial
+
     window.addEventListener('resize', () => {
         adjustSidebarPosition();
-        // Remove o foco do card se a tela for redimensionada para desktop
-        if (window.innerWidth >= 768 && activeCard) {
-            deactivateCardFocus(activeCard);
-        }
+        setupCardObserver(); // Reconfigura o observer no redimensionamento
     });
 
     // Inicialmente, mostra a página inicial
