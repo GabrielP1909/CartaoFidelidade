@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const goToRegisterBtn = document.getElementById('goToRegisterBtn');
     const goToLoginBtn = document.getElementById('goToLoginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
-    
+
     // Novos elementos para o menu lateral (sidebar)
     const openSidebarBtn = document.getElementById('openSidebarBtn');
     const closeSidebarBtn = document.getElementById('closeSidebarBtn');
@@ -59,6 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Novos elementos para o efeito de foco nos cards (valCardsGrid é mantido)
     const valCardsGrid = document.querySelector('.val-cards-grid');
 
+    // Variável para rastrear o card atualmente ativo para o efeito de foco
+    let currentActiveCard = null;
+    let isScrolling = false; // Flag para controlar o requestAnimationFrame
+
     // --- Funções de Controle de Visibilidade de Seções ---
     const showSection = (sectionToShow) => {
         // Esconde todas as seções principais com transição
@@ -70,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mostra a seção desejada com transição
         sectionToShow.classList.remove('hidden');
         // Força o reflow para garantir que a transição ocorra
-        void sectionToShow.offsetWidth; 
+        void sectionToShow.offsetWidth;
         sectionToShow.classList.add('active');
 
         // Fecha o menu lateral se estiver aberto
@@ -79,20 +83,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Garante que o scroll do body seja reativado ao mudar de seção
         document.body.classList.remove('no-scroll');
-        
+
         // Ao mudar de seção, remove o efeito 'is-in-view' de todos os cards
         // para garantir um estado limpo ao retornar à homePage
         if (valCardsGrid) {
             valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
                 cardContainer.classList.remove('is-in-view');
             });
+            currentActiveCard = null; // Reseta o card ativo
+        }
+
+        // Se a página inicial for mostrada, re-avalia o foco dos cards
+        if (sectionToShow === homePage) {
+            updateCardFocus();
         }
     };
 
     // --- Funções de Atualização do Painel do Cliente (Simuladas) ---
     const updateClientPanel = (userData) => {
         // Variável para armazenar os dados do usuário logado (mantida localmente na função)
-        let currentLoggedInUserData = userData; 
+        let currentLoggedInUserData = userData;
 
         if (clientName) clientName.textContent = userData.name;
         if (clientEmail) clientEmail.textContent = userData.email;
@@ -107,9 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 text: `valkirias-client-id-${userData.id}`,
                 width: 100,
                 height: 100,
-                colorDark : "#D32F2F",
-                colorLight : "#1A1A1A",
-                correctLevel : QRCode.CorrectLevel.H
+                colorDark: "#D32F2F",
+                colorLight: "#1A1A1A",
+                correctLevel: QRCode.CorrectLevel.H
             });
         }
 
@@ -120,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             currentPoints.textContent = userData.points;
             pointsToNextReward.textContent = remainingPoints > 0 ? remainingPoints : 0;
-            
+
             const progressPercentage = (userData.points / totalPointsNeeded) * 100;
             progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
             progressText.textContent = `${userData.points} de ${totalPointsNeeded} pontos`;
@@ -214,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (link.tagName === 'BUTTON' && link.querySelector('i')) {
                 text = link.textContent.trim() || link.querySelector('i').className.replace('fas fa-', '').replace('-', ' ').toUpperCase();
             } else if (text === '' && link.getAttribute('aria-label')) {
-                    text = link.getAttribute('aria-label');
+                text = link.getAttribute('aria-label');
             } else if (text === '' && link.querySelector('img')) {
                 text = link.querySelector('img').alt || 'Imagem Link';
             }
@@ -267,86 +277,62 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- Intersection Observer para Cards (Ativado APENAS em mobile e foca o mais centralizado) ---
-    let cardObserver; // Declarar fora para poder ser acessado no resize
-    let currentActiveCard = null; // Para rastrear o card atualmente ativo
+    // --- Lógica de Foco de Cards (Substituindo IntersectionObserver) ---
+    const updateCardFocus = () => {
+        // Apenas aplica a lógica em telas mobile
+        if (window.innerWidth < 768 && valCardsGrid) {
+            let bestCardElement = null;
+            let minDistanceToCenter = Infinity;
+            const viewportCenterY = window.innerHeight / 2;
 
-    const setupCardObserver = () => {
-        // Desconecta o observador existente se houver
-        if (cardObserver) {
-            cardObserver.disconnect();
-        }
+            valCardsGrid.querySelectorAll('.card').forEach(card => {
+                const cardContainer = card.querySelector('.container-card');
+                if (!cardContainer) return;
 
-        if (window.innerWidth < 768) { // Ativar apenas em mobile
-            const handleCardIntersection = (entries) => {
-                let bestCard = null;
-                let minDistanceToCenter = Infinity;
-                const viewportCenterY = window.innerHeight / 2;
+                const cardRect = card.getBoundingClientRect();
+                const cardCenterY = cardRect.top + cardRect.height / 2;
+                const distanceToCenter = Math.abs(cardCenterY - viewportCenterY);
 
-                entries.forEach(entry => {
-                    const cardElement = entry.target;
-                    const cardContainer = cardElement.querySelector('.container-card');
+                // Verifica se o card está visível na viewport
+                const isVisible = cardRect.bottom > 0 && cardRect.top < window.innerHeight;
 
-                    if (!cardContainer) return;
-
-                    // Se o card não está mais intersectando, remove a classe
-                    if (!entry.isIntersecting) {
-                        cardContainer.classList.remove('is-in-view');
-                        return;
-                    }
-
-                    // Calcula a distância do centro do card para o centro da viewport
-                    const cardRect = cardElement.getBoundingClientRect();
-                    const cardCenterY = cardRect.top + cardRect.height / 2;
-                    const distanceToCenter = Math.abs(cardCenterY - viewportCenterY);
-
-                    // Se este card está mais próximo do centro, ele é o "melhor" até agora
-                    if (distanceToCenter < minDistanceToCenter) {
-                        minDistanceToCenter = distanceToCenter;
-                        bestCard = cardContainer;
-                    }
-                });
-
-                // Ativa o melhor card e desativa os outros
-                if (bestCard && bestCard !== currentActiveCard) {
-                    // Desativa o card anterior, se houver
-                    if (currentActiveCard) {
-                        currentActiveCard.classList.remove('is-in-view');
-                    }
-                    // Ativa o novo melhor card
-                    bestCard.classList.add('is-in-view');
-                    currentActiveCard = bestCard;
-                } else if (!bestCard && currentActiveCard) {
-                    // Se nenhum card está mais visível o suficiente, desativa o último ativo
-                    currentActiveCard.classList.remove('is-in-view');
-                    currentActiveCard = null;
+                if (isVisible && distanceToCenter < minDistanceToCenter) {
+                    minDistanceToCenter = distanceToCenter;
+                    bestCardElement = cardContainer;
                 }
-            };
+            });
 
-            // Observa todos os cards com um threshold que detecta qualquer visibilidade
-            // A lógica de centralidade será feita dentro do callback
-            const cardObserverOptions = {
-                root: null, // viewport como root
-                rootMargin: '0px',
-                threshold: Array.from({length: 101}, (v, i) => i / 100) // Observa de 0% a 100% de visibilidade
-            };
-
-            cardObserver = new IntersectionObserver(handleCardIntersection, cardObserverOptions);
-
-            // Observa cada card
-            if (valCardsGrid) {
-                valCardsGrid.querySelectorAll('.card').forEach(card => {
-                    cardObserver.observe(card);
-                });
+            // Ativa o melhor card e desativa os outros
+            if (bestCardElement && bestCardElement !== currentActiveCard) {
+                if (currentActiveCard) {
+                    currentActiveCard.classList.remove('is-in-view');
+                }
+                bestCardElement.classList.add('is-in-view');
+                currentActiveCard = bestCardElement;
+            } else if (!bestCardElement && currentActiveCard) {
+                // Se nenhum card está visível o suficiente, desativa o último ativo
+                currentActiveCard.classList.remove('is-in-view');
+                currentActiveCard = null;
             }
         } else {
-            // Em desktop, garante que a classe 'is-in-view' seja removida se estiver presente
+            // Em desktop, garante que a classe 'is-in-view' seja removida de todos os cards
             if (valCardsGrid) {
                 valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
                     cardContainer.classList.remove('is-in-view');
                 });
             }
             currentActiveCard = null; // Reseta o card ativo em desktop
+        }
+    };
+
+    // Função para otimizar a execução de updateCardFocus no scroll
+    const handleScroll = () => {
+        if (!isScrolling) {
+            window.requestAnimationFrame(() => {
+                updateCardFocus();
+                isScrolling = false;
+            });
+            isScrolling = true;
         }
     };
 
@@ -402,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sidebarLinks.forEach(link => {
         link.addEventListener('click', () => {
             // Apenas fechar se não for um botão de login/registro que já muda de seção
-            if (!link.classList.contains('btn')) { 
+            if (!link.classList.contains('btn')) {
                 sidebarMenu.classList.remove('active');
                 document.body.classList.remove('no-scroll');
             }
@@ -559,8 +545,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) {
                 modal.classList.add('hidden');
                 document.body.classList.remove('no-scroll');
-                // Ao fechar um modal, re-setup o observer para que o efeito volte se o card estiver visível
-                setupCardObserver(); 
+                // Ao fechar um modal, re-avalia o foco dos cards se estiver na homePage
+                if (!homePage.classList.contains('hidden')) {
+                    updateCardFocus();
+                }
             }
         });
     });
@@ -578,12 +566,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Chama a função ao carregar a página e ao redimensionar a janela
     adjustSidebarPosition();
-    setupCardObserver(); // Configura o observer na carga inicial
+    updateCardFocus(); // Configura o foco dos cards na carga inicial
 
     window.addEventListener('resize', () => {
         adjustSidebarPosition();
-        setupCardObserver(); // Reconfigura o observer no redimensionamento
+        updateCardFocus(); // Reconfigura o foco dos cards no redimensionamento
     });
+
+    // Adiciona o event listener para o scroll
+    window.addEventListener('scroll', handleScroll);
 
     // Inicialmente, mostra a página inicial
     showSection(homePage);
