@@ -607,3 +607,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicialmente, mostra a página inicial
     showSection(homePage);
 });
+

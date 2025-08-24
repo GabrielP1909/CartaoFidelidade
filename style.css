@@ -421,7 +421,6 @@ body.no-scroll {
     z-index: 1; /* Garante que o brilho fique acima do fundo do card */
     /* Sombra sutil padrão */
     box-shadow: 0 35px 56px rgba(0, 0, 0, 0.774);
-
 }
 
 /* Ajuste para o pseudo-elemento ::before do btn-shine nos cards */
@@ -436,20 +435,6 @@ body.no-scroll {
     transform: skewX(-20deg);
     transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
     z-index: 2; /* Garante que o brilho esteja acima do conteúdo do card */
-}
-
-/* Efeito de hover para desktop (e tablets maiores) */
-@media (min-width: 768px) {
-    .container-card:hover {
-        transform: translateY(-6px) scale(1.03); /* Leve elevação e aumento de escala no hover */
-        box-shadow: 0 15px 30px rgba(211, 47, 47, 0.4), 0 0 20px rgba(211, 47, 47, 0.2); /* Sombra mais pronunciada com brilho vermelho */
-        border-color: var(--accent-color); /* Destaca a borda no hover */
-    }
-
-    /* Garante que o brilho do btn-shine seja visível no hover em desktop */
-    .container-card:hover.btn-shine::before {
-        left: 125%;
-    }
 }
 
 /* Efeito para mobile (ativado via JS com a classe 'is-in-view') */
@@ -470,6 +455,38 @@ body.no-scroll {
         transform: translateY(0) scale(1); /* Remove o efeito de hover em mobile */
         box-shadow: 0 35px 56px rgba(0, 0, 0, 0.774); /* Volta à sombra padrão */
         border-color: transparent; /* Volta à borda padrão */
+    }
+}
+
+/* Lógica de pointer-events para mobile (até 768px) */
+@media (max-width: 768px) {
+    .container-card {
+        pointer-events: none; /* Card não clicável */
+    }
+    .container-card .val-card__cta {
+        pointer-events: auto; /* Botão clicável */
+    }
+}
+
+/* Lógica de pointer-events e hover para desktop (acima de 768px) */
+@media (min-width: 769px) {
+    .container-card {
+        pointer-events: none; /* Card não clicável */
+    }
+    .container-card .val-card__cta {
+        pointer-events: auto; /* Botão clicável */
+    }
+
+    /* Efeito de hover para o card inteiro no desktop */
+    .card:hover .container-card {
+        transform: translateY(-6px) scale(1.03); /* Leve elevação e aumento de escala no hover */
+        box-shadow: 0 15px 30px rgba(211, 47, 47, 0.4), 0 0 20px rgba(211, 47, 47, 0.2); /* Sombra mais pronunciada com brilho vermelho */
+        border-color: var(--accent-color); /* Destaca a borda no hover */
+    }
+
+    /* Garante que o brilho do btn-shine seja visível no hover em desktop */
+    .card:hover .container-card.btn-shine::before {
+        left: 125%;
     }
 }
 
