@@ -575,6 +575,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Adiciona o event listener para o scroll
     window.addEventListener('scroll', handleScroll);
+    // Adiciona o event listener para touchmove (para dispositivos touch)
+    window.addEventListener('touchmove', handleScroll);
 
     // Inicialmente, mostra a página inicial
     showSection(homePage);
