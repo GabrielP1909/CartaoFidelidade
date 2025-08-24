@@ -80,9 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fecha o menu lateral se estiver aberto
         if (sidebarMenu.classList.contains('active')) {
             sidebarMenu.classList.remove('active');
+            // Não remove no-scroll aqui, pois showSection pode ser chamado de dentro de um modal
+            // A função hideModal ou closeSidebar lida com isso.
         }
-        // Garante que o scroll do body seja reativado ao mudar de seção
-        document.body.classList.remove('no-scroll');
+        // Garante que o scroll do body seja reativado ao mudar de seção,
+        // mas apenas se não houver um modal aberto.
+        if (!document.querySelector('.modal-overlay:not(.hidden)')) {
+            enableBodyScroll(); // Usa a função para reabilitar o scroll
+        }
+
 
         // Ao mudar de seção, remove o efeito 'is-in-view' de todos os cards
         // para garantir um estado limpo ao retornar à homePage
@@ -269,8 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Para links externos ou outros, redireciona
                     window.location.href = linkData.href;
                 }
-                allLinksModal.classList.add('hidden');
-                document.body.classList.remove('no-scroll');
+                hideModal(allLinksModal); // Usa a nova função para fechar o modal
             });
             listItem.appendChild(anchor);
             allLinksList.appendChild(listItem);
@@ -336,6 +341,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- Funções para controlar o scroll do body e evitar o "pulo" ---
+    const disableBodyScroll = () => {
+        document.body.style.overflow = 'hidden'; // Trava o scroll no body
+        document.body.classList.add('no-scroll'); // Adiciona a classe para CSS
+    };
+
+    const enableBodyScroll = () => {
+        document.body.style.overflow = ''; // Remove o overflow do body
+        document.body.classList.remove('no-scroll'); // Remove a classe
+    };
+
+    // --- Funções para mostrar e esconder modais ---
+    const showModal = (modalElement) => {
+        modalElement.classList.remove('hidden');
+        disableBodyScroll();
+        // Ao abrir um modal, remove o efeito 'is-in-view' de todos os cards
+        if (valCardsGrid) {
+            valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
+                cardContainer.classList.remove('is-in-view');
+            });
+        }
+        currentActiveCard = null; // Garante que nenhum card esteja ativo enquanto o modal está aberto
+    };
+
+    const hideModal = (modalElement) => {
+        modalElement.classList.add('hidden');
+        enableBodyScroll();
+        // Ao fechar um modal, re-avalia o foco dos cards se estiver na homePage
+        if (!homePage.classList.contains('hidden')) {
+            updateCardFocus();
+        }
+    };
+
+
     // --- Event Listeners ---
 
     // Navegação principal (botões da home page)
@@ -372,14 +411,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (openSidebarBtn) {
         openSidebarBtn.addEventListener('click', () => {
             sidebarMenu.classList.add('active');
-            document.body.classList.add('no-scroll'); // Desabilita o scroll do body
+            disableBodyScroll(); // Desabilita o scroll do body
         });
     }
 
     if (closeSidebarBtn) {
         closeSidebarBtn.addEventListener('click', () => {
             sidebarMenu.classList.remove('active');
-            document.body.classList.remove('no-scroll'); // Reabilita o scroll do body
+            enableBodyScroll(); // Reabilita o scroll do body
         });
     }
 
@@ -390,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Apenas fechar se não for um botão de login/registro que já muda de seção
             if (!link.classList.contains('btn')) {
                 sidebarMenu.classList.remove('active');
-                document.body.classList.remove('no-scroll');
+                enableBodyScroll();
             }
         });
     });
@@ -507,15 +546,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (showAllLinksBtn) {
         showAllLinksBtn.addEventListener('click', () => {
             populateAllLinksModal(); // Popula o modal com os links
-            allLinksModal.classList.remove('hidden');
-            document.body.classList.add('no-scroll'); // Desabilita o scroll do body
+            showModal(allLinksModal); // Usa a nova função para mostrar o modal
         });
     }
 
     if (closeAllLinksModalBtn) {
         closeAllLinksModalBtn.addEventListener('click', () => {
-            allLinksModal.classList.add('hidden');
-            document.body.classList.remove('no-scroll'); // Reabilita o scroll do body
+            hideModal(allLinksModal); // Usa a nova função para fechar o modal
         });
     }
 
@@ -526,29 +563,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const modalId = e.currentTarget.dataset.modalTarget;
             const modal = document.getElementById(modalId);
             if (modal) {
-                modal.classList.remove('hidden');
-                document.body.classList.add('no-scroll');
-                // Ao abrir um modal, remove o efeito 'is-in-view' de todos os cards
-                if (valCardsGrid) {
-                    valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
-                        cardContainer.classList.remove('is-in-view');
-                    });
-                }
-                currentActiveCard = null; // Garante que nenhum card esteja ativo enquanto o modal está aberto
+                showModal(modal); // Usa a nova função para mostrar o modal
             }
         });
     });
 
     closeModalBtns.forEach(button => {
-        button.addEventListener('click', () => {
-            const modal = button.closest('.modal-overlay');
+        button.addEventListener('click', (e) => {
+            const modal = e.currentTarget.closest('.modal-overlay');
             if (modal) {
-                modal.classList.add('hidden');
-                document.body.classList.remove('no-scroll');
-                // Ao fechar um modal, re-avalia o foco dos cards se estiver na homePage
-                if (!homePage.classList.contains('hidden')) {
-                    updateCardFocus();
-                }
+                hideModal(modal); // Usa a nova função para fechar o modal
             }
         });
     });
@@ -569,8 +593,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCardFocus(); // Configura o foco dos cards na carga inicial
 
     window.addEventListener('resize', () => {
+        // Não é mais necessário ajustar padding-right ou largura do header aqui
+        // Apenas ajusta a posição da sidebar e o foco dos cards
         adjustSidebarPosition();
-        updateCardFocus(); // Reconfigura o foco dos cards no redimensionamento
+        updateCardFocus();
     });
 
     // Adiciona o event listener para o scroll

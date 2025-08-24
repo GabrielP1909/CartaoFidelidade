@@ -37,6 +37,11 @@ html, body {
   margin: 0; /* Remove margens padrão */
 }
 
+html {
+    overflow-y: scroll; /* Garante que a barra de rolagem esteja sempre presente no HTML */
+    overflow-x: hidden; /* Evita rolagem horizontal */
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background: radial-gradient(ellipse at center, #740303 0%, #0A0A0A 70%, #000000 100%);
@@ -44,9 +49,10 @@ body {
     width: 100%;
     display: flex; /* Usa flexbox para organizar o conteúdo */
     flex-direction: column; /* Organiza os itens em coluna */
-    overflow-x: hidden;
+    /* overflow-x: hidden; REMOVIDO: movido para html */
     color: var(--primary-color);
     position: relative;
+    /* Removido overflow-y: scroll; daqui. O JS vai gerenciar o padding-right */
 }
 
 /* Compensa o header fixo sem empurrar o fundo */
@@ -65,7 +71,7 @@ body::after {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100%; /* ALTERADO: de 100vw para 100% */
     height: 100vh;
     z-index: -1;
 }
@@ -238,7 +244,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Nova classe para desabilitar o scroll do body */
 body.no-scroll {
-    overflow: hidden;
+    overflow: hidden; /* Usado para travar o scroll no body */
 }
 
 /* --- Componentes e Layouts --- */
@@ -248,7 +254,7 @@ body.no-scroll {
     position: fixed; /* Fixo no topo */
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100%; /* Mantenha isso como padrão, será ajustado via JS */
     height: 80px; /* Altura fixa */
     display: flex;
     align-items: center;
@@ -256,6 +262,7 @@ body.no-scroll {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     border-bottom: 1px solid rgba(211, 47, 47, 0.2);
     z-index: 1000;
+    box-sizing: border-box; /* Adicionado para que o padding não aumente a largura */
 }
 
 .header-content {
@@ -476,7 +483,8 @@ body.no-scroll {
     content: "";
     z-index: -1; /* Garante que a borda fique atrás do conteúdo e do brilho */
     border-radius: 45px;
-    background: linear-gradient(71deg, var(--dark-background), #800303, var(--dark-background)); /* Gradiente de borda vermelho */
+    /* CORREÇÃO DA LINHA 246: Substituindo var() por valor hexadecimal direto para evitar problemas */
+    background: linear-gradient(71deg, #0A0A0A, #800303, #0A0A0A); /* #0A0A0A é o valor de var(--dark-background) */
 }
 
 .card-icon-wrapper {
@@ -487,11 +495,9 @@ body.no-scroll {
     justify-content: center;
     margin-bottom: 32px;
     border-radius: 50%; /* Ícone circular */
-    /* REMOVIDO: Fundo vermelho do ícone */
-    background-color: #121111; /* Novo fundo neutro */
-    /* REMOVIDO: Brilho sutil vermelho */
+    /* Revertido para o original: */
+    background-color: #121111; /* Fundo neutro */
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Sombra neutra */
-    /* transition: transform 0.3s ease; REMOVIDO PARA PARALLAX */
 }
 
 .card-icon-wrapper i {
@@ -982,6 +988,7 @@ body.no-scroll {
     align-items: center; /* items-center */
     justify-content: center; /* justify-center */
     z-index: 50;
+    width: 100%; /* ALTERADO: de 100vw para 100% */
 }
 
 .modal-overlay.hidden {
@@ -993,23 +1000,19 @@ body.no-scroll {
 }
 
 .modal-content {
-    background-color: var(--dark-surface);
-    padding: 2rem; /* p-8 */
-    border-radius: 0.75rem; /* rounded-xl */
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
-    max-width: 24rem; /* max-w-sm */
-    width: 100%; /* w-full */
+    background-color: var(--dark-surface); /* Revertido para o original */
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* Revertido para o original */
+    max-width: 24rem;
+    width: 100%;
     text-align: center;
-    border: 1px solid var(--gray-dark); /* border border-grayDark */
-    position: relative; /* Adicionado para posicionar o botão de fechar */
-    
-    /* --- NOVOS ESTILOS PARA O MODAL-CONTENT --- */
-    background: linear-gradient(145deg, var(--dark-surface), var(--dark-background)); /* Gradiente sutil */
-    border: 2px solid var(--accent-color); /* Borda mais pronunciada com a cor de destaque */
-    box-shadow: 0 0 30px rgba(211, 47, 47, 0.4), 0 0 15px rgba(0, 0, 0, 0.8); /* Sombra mais complexa com brilho vermelho */
-    transform: scale(0.95); /* Começa um pouco menor para a animação */
-    opacity: 0; /* Começa invisível para a animação */
-    animation: modal-fade-in 0.3s ease-out forwards; /* Animação de entrada */
+    border: 1px solid var(--gray-dark); /* Revertido para o original */
+    position: relative;
+    /* Removendo os estilos de gradiente e sombra adicionais */
+    transform: scale(0.95); /* Mantido para a animação */
+    opacity: 0; /* Mantido para a animação */
+    animation: modal-fade-in 0.3s ease-out forwards; /* Mantido para a animação */
 }
 
 /* Animação de entrada do modal */
@@ -1048,9 +1051,9 @@ body.no-scroll {
 .modal-title {
     font-size: 1.5rem; /* text-2xl */
     font-weight: 700; /* font-bold */
-    color: var(--primary-color);
-    margin-bottom: 0.75rem; /* mb-3 */
-    text-shadow: 0 0 8px rgba(211, 47, 47, 0.3); /* Sombra de texto sutil */
+    color: var(--primary-color); /* Revertido para o original */
+    margin-bottom: 0.75rem;
+    text-shadow: none; /* Removido o text-shadow */
 }
 
 .modal-description {
@@ -1448,11 +1451,25 @@ body.no-scroll {
     }
 
     .modal-content {
-        max-width: 28rem; /* md:max-w-md */
+        background-color: var(--dark-surface); /* Revertido para o original */
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* Revertido para o original */
+        max-width: 24rem;
+        width: 100%;
+        text-align: center;
+        border: 1px solid var(--gray-dark); /* Revertido para o original */
+        position: relative;
+        /* Removendo os estilos de gradiente e sombra adicionais */
+        transform: scale(0.95); /* Mantido para a animação */
+        opacity: 0; /* Mantido para a animação */
+        animation: modal-fade-in 0.3s ease-out forwards; /* Mantido para a animação */
     }
 
     .modal-title {
         font-size: 1.875rem; /* md:text-3xl */
+        color: var(--primary-color); /* Revertido para o original */
+        text-shadow: none; /* Removido o text-shadow */
     }
 
     .modal-description {
