@@ -63,6 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentActiveCard = null;
     let isScrolling = false; // Flag para controlar o requestAnimationFrame
 
+    // Variável para salvar a posição do scroll
+    let lastScrollPosition = 0;
+    // Variável para salvar a largura da barra de rolagem
+    let scrollBarWidth = 0;
+
     // --- Funções de Controle de Visibilidade de Seções ---
     const showSection = (sectionToShow) => {
         // Esconde todas as seções principais com transição
@@ -343,19 +348,91 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funções para controlar o scroll do body e evitar o "pulo" ---
     const disableBodyScroll = () => {
+        lastScrollPosition = window.scrollY; // Salva a posição atual do scroll
         document.body.style.overflow = 'hidden'; // Trava o scroll no body
-        document.body.classList.add('no-scroll'); // Adiciona a classe para CSS
+        document.body.style.position = 'fixed'; // Fixa o body
+        document.body.style.top = `-${lastScrollPosition}px`; // Compensa o scroll
+        document.body.style.width = '100%'; // Garante que o body ocupe 100% da largura
+        
+        // Calcula a largura da barra de rolagem para evitar o "salto" horizontal
+        const documentWidth = document.documentElement.clientWidth;
+        const windowWidth = window.innerWidth;
+        scrollBarWidth = windowWidth - documentWidth;
+        if (scrollBarWidth > 0) {
+            document.body.style.paddingRight = `${scrollBarWidth}px`;
+            // Ajusta o header fixo para não "saltar"
+            if (header) {
+                header.style.paddingRight = `${scrollBarWidth}px`;
+            }
+        }
     };
 
     const enableBodyScroll = () => {
         document.body.style.overflow = ''; // Remove o overflow do body
-        document.body.classList.remove('no-scroll'); // Remove a classe
+        document.body.style.position = ''; // Remove o posicionamento fixo
+        document.body.style.top = ''; // Remove a compensação de scroll
+        document.body.style.width = ''; // Remove a largura fixa
+        document.body.style.paddingRight = ''; // Remove o padding da barra de rolagem
+        if (header) {
+            header.style.paddingRight = ''; // Remove o padding do header
+        }
+        window.scrollTo(0, lastScrollPosition); // Restaura a posição do scroll
     };
 
     // --- Funções para mostrar e esconder modais ---
-    const showModal = (modalElement) => {
-        modalElement.classList.remove('hidden');
-        disableBodyScroll();
+    const showModal = (modalElement, cardElement = null) => {
+        disableBodyScroll(); // Impede a rolagem do body e mantém a posição
+
+        // Garante que o modal-overlay esteja fixo e cubra a viewport
+        modalElement.style.position = 'fixed';
+        modalElement.style.top = '0';
+        modalElement.style.left = '0';
+        modalElement.style.width = '100%';
+        modalElement.style.height = '100%';
+        modalElement.classList.remove('hidden'); // Mostra o overlay
+
+        const modalContent = modalElement.querySelector('.modal-content');
+
+        if (cardElement && modalContent) {
+            // Temporariamente mostra o modal-content para calcular a altura
+            modalContent.style.visibility = 'hidden';
+            modalContent.style.display = 'block'; // Garante que o conteúdo esteja visível para cálculo
+
+            const cardRect = cardElement.getBoundingClientRect();
+            const modalContentHeight = modalContent.offsetHeight;
+
+            // Calcula a posição vertical do card na viewport
+            const cardCenterYInViewport = cardRect.top + (cardRect.height / 2);
+
+            // Calcula a posição ideal para o topo do modal-content para que ele apareça centralizado com o card
+            let targetTop = cardCenterYInViewport - (modalContentHeight / 2);
+
+            // Ajusta para garantir que o modal não saia da tela na parte superior ou inferior
+            targetTop = Math.max(0, targetTop); // Não deixa o modal ir acima do topo da viewport
+            targetTop = Math.min(targetTop, window.innerHeight - modalContentHeight); // Não deixa o modal ir abaixo do final da viewport
+
+            // Aplica a posição usando transform para melhor performance e evitar reflows
+            // O modal-overlay já tem display: flex, align-items: center, justify-content: center
+            // Então, o transform translateY ajustará a posição vertical a partir do centro
+            // A centralização padrão do flexbox é (window.innerHeight - modalContentHeight) / 2
+            // Precisamos compensar essa centralização para mover o modal para o targetTop
+            const currentCenterOffset = (window.innerHeight - modalContentHeight) / 2;
+            const translateYValue = targetTop - currentCenterOffset;
+
+            modalContent.style.transform = `translateY(${translateYValue}px)`;
+            modalContent.style.marginTop = 'auto'; // Mantém a centralização horizontal via flexbox
+            modalContent.style.marginBottom = 'auto'; // Mantém a centralização horizontal via flexbox
+
+            // Restaura a visibilidade
+            modalContent.style.visibility = '';
+            modalContent.style.display = ''; // Volta ao display padrão do CSS
+        } else if (modalContent) {
+            // Se não houver card, centraliza o modal-content na viewport (comportamento padrão)
+            modalContent.style.transform = 'translateY(0)'; // Reseta qualquer transformação
+            modalContent.style.marginTop = 'auto'; // Centraliza via flexbox
+            modalContent.style.marginBottom = 'auto'; // Centraliza via flexbox
+        }
+
         // Ao abrir um modal, remove o efeito 'is-in-view' de todos os cards
         if (valCardsGrid) {
             valCardsGrid.querySelectorAll('.container-card').forEach(cardContainer => {
@@ -367,7 +444,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hideModal = (modalElement) => {
         modalElement.classList.add('hidden');
-        enableBodyScroll();
+        enableBodyScroll(); // Reabilita o scroll do body e restaura a posição
+
+        // Reseta o posicionamento do modal-content para o padrão CSS
+        const modalContent = modalElement.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.transform = '';
+            modalContent.style.marginTop = '';
+            modalContent.style.marginBottom = '';
+        }
+
         // Ao fechar um modal, re-avalia o foco dos cards se estiver na homePage
         if (!homePage.classList.contains('hidden')) {
             updateCardFocus();
@@ -559,11 +645,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners para os modais dos cards "Compre", "Acumule", "Resgate"
     openModalBtns.forEach(button => {
         button.addEventListener('click', (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Impede o comportamento padrão do link
             const modalId = e.currentTarget.dataset.modalTarget;
             const modal = document.getElementById(modalId);
+            // Encontra o elemento 'card' pai do botão clicado
+            const cardElement = e.currentTarget.closest('.card');
             if (modal) {
-                showModal(modal); // Usa a nova função para mostrar o modal
+                showModal(modal, cardElement); // Passa o cardElement para posicionar o modal
             }
         });
     });
@@ -607,4 +695,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicialmente, mostra a página inicial
     showSection(homePage);
 });
-

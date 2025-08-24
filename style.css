@@ -49,7 +49,6 @@ body {
     width: 100%;
     display: flex; /* Usa flexbox para organizar o conteúdo */
     flex-direction: column; /* Organiza os itens em coluna */
-    /* overflow-x: hidden; REMOVIDO: movido para html */
     color: var(--primary-color);
     position: relative;
     /* Removido overflow-y: scroll; daqui. O JS vai gerenciar o padding-right */
@@ -88,6 +87,7 @@ h1, h2, h3, h4, h5, h6 {
     margin-right: auto;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+    box-sizing: border-box; /* Adicionado para que o padding não aumente a largura */
 }
 
 .text-center {
@@ -243,9 +243,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Nova classe para desabilitar o scroll do body */
-body.no-scroll {
-    overflow: hidden; /* Usado para travar o scroll no body */
-}
+/* REMOVIDO: body.no-scroll não é mais necessário aqui, a lógica é aplicada via JS */
+
 
 /* --- Componentes e Layouts --- */
 
@@ -263,6 +262,7 @@ body.no-scroll {
     border-bottom: 1px solid rgba(211, 47, 47, 0.2);
     z-index: 1000;
     box-sizing: border-box; /* Adicionado para que o padding não aumente a largura */
+    transition: padding-right 0.3s ease; /* Adicionado para transição suave do padding */
 }
 
 .header-content {
