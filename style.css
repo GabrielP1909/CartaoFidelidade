@@ -40,18 +40,17 @@ html, body {
 html {
     overflow-y: scroll; /* Garante que a barra de rolagem esteja sempre presente no HTML */
     overflow-x: hidden; /* Evita rolagem horizontal */
+    position: relative; /* ADICIONADO: Para posicionamento correto dos pseudo-elementos */
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    background: radial-gradient(ellipse at center, #740303 0%, #0A0A0A 70%, #000000 100%);
     min-height: 100vh; /* Garante que o body tenha no mínimo a altura da viewport */
     width: 100%;
     display: flex; /* Usa flexbox para organizar o conteúdo */
     flex-direction: column; /* Organiza os itens em coluna */
     color: var(--primary-color);
     position: relative;
-    /* Removido overflow-y: scroll; daqui. O JS vai gerenciar o padding-right */
 }
 
 /* Compensa o header fixo sem empurrar o fundo */
@@ -60,7 +59,6 @@ body {
     padding-top: 80px; /* Compensa a altura do header fixo */
     width: 100%;
     box-sizing: border-box;
-    /* Removido min-height: 100vh; */
 }
 
 /* Fundo cobre toda a tela */
@@ -70,9 +68,19 @@ body::after {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%; /* ALTERADO: de 100vw para 100% */
-    height: 100vh;
-    z-index: -1;
+    width: 100vw; /* Garante que cubra toda a largura da viewport */
+    height: 100vh; /* Garante que cubra toda a altura da viewport */
+}
+
+/* Adicionado o gradiente ao pseudo-elemento body::before */
+body::before {
+    z-index: -10; /* ALTERADO: Valor negativo mais baixo para ficar no fundo */
+    background: radial-gradient(ellipse at center, #740303 0%, #0A0A0A 70%, #000000 100%);
+}
+
+/* Mantido body::after com seu z-index original */
+body::after {
+    z-index: -9; /* ALTERADO: Valor negativo mais baixo para ficar no fundo */
 }
 
 
@@ -1001,11 +1009,14 @@ h1, h2, h3, h4, h5, h6 {
     display: none; /* Controlado por JS */
     position: fixed;
     inset: 0; /* top:0; right:0; bottom:0; left:0; */
-    background-color: rgba(0, 0, 0, 0.75); /* bg-black bg-opacity-75 */
+    background-color: rgba(0, 0, 0, 0.6); /* Ajustado para 60% de opacidade */
     align-items: center; /* items-center */
     justify-content: center; /* justify-center */
-    z-index: 50;
-    width: 100%; /* ALTERADO: de 100vw para 100% */
+    z-index: 9999; /* Mantido alto */
+    width: 100vw; /* Garante que cubra toda a largura da viewport */
+    height: 100vh; /* Garante que cubra toda a altura da viewport */
+    backdrop-filter: blur(5px); /* Adicionado para o efeito de desfoque */
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease; /* Transição suave */
 }
 
 .modal-overlay.hidden {

@@ -350,10 +350,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const disableBodyScroll = () => {
         lastScrollPosition = window.scrollY; // Salva a posição atual do scroll
         document.body.style.overflow = 'hidden'; // Trava o scroll no body
-        document.body.style.position = 'fixed'; // Fixa o body
-        document.body.style.top = `-${lastScrollPosition}px`; // Compensa o scroll
-        document.body.style.width = '100%'; // Garante que o body ocupe 100% da largura
-        
+        document.documentElement.style.overflow = 'hidden'; // Trava o scroll no html também
+
         // Calcula a largura da barra de rolagem para evitar o "salto" horizontal
         const documentWidth = document.documentElement.clientWidth;
         const windowWidth = window.innerWidth;
@@ -369,26 +367,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const enableBodyScroll = () => {
         document.body.style.overflow = ''; // Remove o overflow do body
-        document.body.style.position = ''; // Remove o posicionamento fixo
-        document.body.style.top = ''; // Remove a compensação de scroll
-        document.body.style.width = ''; // Remove a largura fixa
+        document.documentElement.style.overflow = ''; // Remove o overflow do html
+
         document.body.style.paddingRight = ''; // Remove o padding da barra de rolagem
         if (header) {
             header.style.paddingRight = ''; // Remove o padding do header
         }
-        window.scrollTo(0, lastScrollPosition); // Restaura a posição do scroll
+        window.scrollTo(0, lastScrollPosition); // RESTAURADO: Restaura a posição do scroll
     };
 
     // --- Funções para mostrar e esconder modais ---
     const showModal = (modalElement, cardElement = null) => {
-        disableBodyScroll(); // Impede a rolagem do body e mantém a posição
+        // Identifica se é um modal de "Saiba Mais"
+        const isSaibaMaisModal = modalElement.id === 'compreModal' || 
+                                 modalElement.id === 'acumuleModal' || 
+                                 modalElement.id === 'resgateModal';
 
-        // Garante que o modal-overlay esteja fixo e cubra a viewport
-        modalElement.style.position = 'fixed';
-        modalElement.style.top = '0';
-        modalElement.style.left = '0';
-        modalElement.style.width = '100%';
-        modalElement.style.height = '100%';
+        // Desabilita o scroll apenas se for mobile OU se não for um modal de "Saiba Mais"
+        if (window.innerWidth < 768 || !isSaibaMaisModal) {
+            disableBodyScroll(); // Impede a rolagem do body e mantém a posição
+        } else {
+            // Se for um modal de "Saiba Mais" e for desktop, não desabilita o scroll do body.
+            // Apenas garante que o modal-overlay seja exibido e fixo.
+            modalElement.style.position = 'fixed';
+            modalElement.style.top = '0';
+            modalElement.style.left = '0';
+            modalElement.style.width = '100vw';
+            modalElement.style.height = '100vh';
+        }
+        
         modalElement.classList.remove('hidden'); // Mostra o overlay
 
         const modalContent = modalElement.querySelector('.modal-content');
@@ -444,7 +451,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hideModal = (modalElement) => {
         modalElement.classList.add('hidden');
-        enableBodyScroll(); // Reabilita o scroll do body e restaura a posição
+        
+        // Identifica se é um modal de "Saiba Mais"
+        const isSaibaMaisModal = modalElement.id === 'compreModal' || 
+                                 modalElement.id === 'acumuleModal' || 
+                                 modalElement.id === 'resgateModal';
+
+        // Reabilita o scroll apenas se ele foi desabilitado por showModal
+        // Ou seja, se a largura da janela for menor que 768px OU se não for um modal de "Saiba Mais"
+        if (window.innerWidth < 768 || !isSaibaMaisModal) {
+            enableBodyScroll(); // Reabilita o scroll do body e restaura a posição
+        } else {
+            // Se for um modal de "Saiba Mais" e for desktop, apenas esconde o overlay
+            // e reseta as propriedades de estilo que foram definidas para fixar o overlay.
+            modalElement.style.position = '';
+            modalElement.style.top = '';
+            modalElement.style.left = '';
+            modalElement.style.width = '';
+            modalElement.style.height = '';
+        }
 
         // Reseta o posicionamento do modal-content para o padrão CSS
         const modalContent = modalElement.querySelector('.modal-content');
