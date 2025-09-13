@@ -29,6 +29,8 @@
     --card-border-red-light: rgba(107, 0, 0, 0.5); /* Versão mais clara e suave para gradiente */
     --card-text-color: #FFFFFF;
     --card-description-color: hsla(0, 0%, 100%, 0.6); /* Opacidade ligeiramente reduzida para suavizar */
+
+    --header-border-color: rgba(211, 47, 47, 0.2); /* Nova variável para a borda do cabeçalho */
 }
 
 /* Estilos CSS globais */
@@ -51,6 +53,7 @@ body {
     flex-direction: column; /* Organiza os itens em coluna */
     color: var(--primary-color);
     position: relative;
+    background-color: transparent; /* Garante que o body não tenha um fundo opaco próprio */
 }
 
 /* Compensa o header fixo sem empurrar o fundo */
@@ -74,13 +77,13 @@ body::after {
 
 /* Adicionado o gradiente ao pseudo-elemento body::before */
 body::before {
-    z-index: -10; /* ALTERADO: Valor negativo mais baixo para ficar no fundo */
+    z-index: -2; /* ALTERADO: Valor negativo mais baixo para ficar no fundo, mas acima do body::after */
     background: radial-gradient(ellipse at center, #740303 0%, #0A0A0A 70%, #000000 100%);
 }
 
 /* Mantido body::after com seu z-index original */
 body::after {
-    z-index: -9; /* ALTERADO: Valor negativo mais baixo para ficar no fundo */
+    z-index: -3; /* ALTERADO: Valor negativo mais baixo para ficar no fundo */
 }
 
 
@@ -102,9 +105,29 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
+/* Ajuste para a classe hidden para permitir transições */
 .hidden {
     display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none; /* Impede interações quando oculto */
 }
+
+/* Estilos para transição de seções */
+.section-transition {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    display: none; /* Inicia oculto */
+}
+
+.section-transition.active {
+    display: flex; /* Ou block, dependendo do layout interno da seção */
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto; /* Permite interações quando ativo */
+}
+
 
 /* Efeito de brilho para botões de destaque */
 .btn-shine {
@@ -265,12 +288,20 @@ h1, h2, h3, h4, h5, h6 {
     height: 80px; /* Altura fixa */
     display: flex;
     align-items: center;
-    background: linear-gradient(to right, #000000, #a10b0b21, #000000);
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente para ver o gradiente do body */
+    backdrop-filter: blur(5px); /* Efeito de desfoque para o que está por trás */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    border-bottom: 1px solid rgba(211, 47, 47, 0.2);
-    z-index: 1000;
+    border-bottom: 1px solid var(--header-border-color); /* Borda sutil para separação */
+    z-index: 1000; /* Mantém o cabeçalho acima de outros elementos */
     box-sizing: border-box; /* Adicionado para que o padding não aumente a largura */
-    transition: padding-right 0.3s ease; /* Adicionado para transição suave do padding */
+    transition: padding-right 0.3s ease, background-color 0.3s ease, backdrop-filter 0.3s ease; /* Adicionado para transição suave do padding */
+}
+
+/* Adicione esta media query para aplicar um desfoque maior em telas menores */
+@media (max-width: 767px) { /* Aplica em telas menores que 768px (mobile) */
+    .header-gradient {
+        backdrop-filter: blur(10px); /* Aumenta o desfoque para 10px em mobile */
+    }
 }
 
 .header-content {
@@ -381,31 +412,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .home-title {
-    font-size: 2.25rem; /* text-4xl */
+    font-size: 2.5rem; /* Ajustado de 2.75rem para 2.5rem */
     font-weight: 800; /* font-extrabold */
     color: var(--primary-color);
-    margin-bottom: 2rem; /* mb-8 */
+    margin-bottom: 2rem; /* Ajustado de 2.5rem para 2rem */
     line-height: 1.25; /* leading-tight */
 }
 
 .home-subtitle {
-    font-size: 1.25rem; /* text-xl */
+    font-size: 1.35rem; /* Ajustado de 1.5rem para 1.35rem */
     color: var(--gray-light);
-    margin-bottom: 2.5rem; /* mb-10 */
+    margin-bottom: 2.5rem; /* Ajustado de 3rem para 2.5rem */
 }
 
 /* Container para os novos cards (grid) */
 .val-cards-grid {
     display: grid;
     grid-template-columns: 1fr; /* Uma coluna por padrão */
-    gap: 24px; /* Espaçamento entre os cards */
-    margin-bottom: 3rem; /* Margem inferior para separar dos botões */
+    gap: 28px; /* Ajustado de 32px para 28px */
+    margin-bottom: 3rem; /* Ajustado de 3.5rem para 3rem */
     justify-items: center; /* Centraliza os cards na grid */
 }
 
 /* --- Estilos para os NOVOS Cards (Compre, Acumule, Resgate) --- */
 .card {
-    max-width: 400px;
+    max-width: 420px; /* Ajustado de 450px para 420px */
     border: 0;
     width: 100%;
     margin-inline: auto;
@@ -418,7 +449,7 @@ h1, h2, h3, h4, h5, h6 {
     background: linear-gradient(71deg, var(--card-bg-dark), var(--card-bg-medium), var(--card-bg-dark));
     background-clip: padding-box;
     border-radius: 45px;
-    padding: 40px;
+    padding: 40px; /* Ajustado de 45px para 40px */
     display: flex; /* Adicionado para alinhar conteúdo */
     flex-direction: column; /* Adicionado para alinhar conteúdo */
     align-items: center; /* Centraliza horizontalmente */
@@ -513,12 +544,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-icon-wrapper {
-    width: 80px; /* Tamanho do wrapper do ícone */
-    height: 80px;
+    width: 85px; /* Ajustado de 90px para 85px */
+    height: 85px; /* Ajustado de 90px para 85px */
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 32px;
+    margin-bottom: 32px; /* Ajustado de 36px para 32px */
     border-radius: 50%; /* Ícone circular */
     /* Revertido para o original: */
     background-color: #121111; /* Fundo neutro */
@@ -526,7 +557,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-icon-wrapper i {
-    font-size: 40px; /* Tamanho do ícone Font Awesome */
+    font-size: 42px; /* Ajustado de 45px para 42px */
     color: var(--primary-color); /* Cor do ícone (branco) */
 }
 
@@ -534,10 +565,10 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     color: var(--card-text-color);
     letter-spacing: -0.02em;
-    line-height: 40px;
+    line-height: 40px; /* Ajustado de 44px para 40px */
     font-style: normal;
-    font-size: 28px;
-    padding-bottom: 8px;
+    font-size: 30px; /* Ajustado de 32px para 30px */
+    padding-bottom: 8px; /* Ajustado de 10px para 8px */
     margin-top: 0; /* Resetar margem padrão */
     margin-bottom: 0; /* Resetar margem padrão */
     /* transition: transform 0.3s ease; REMOVIDO PARA PARALLAX */
@@ -545,26 +576,26 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-description {
     font-weight: 600;
-    line-height: 32px;
+    line-height: 32px; /* Ajustado de 36px para 32px */
     color: var(--card-description-color);
-    font-size: 16px;
-    max-width: 470px;
+    font-size: 16px; /* Ajustado de 18px para 16px */
+    max-width: 470px; /* Ajustado de 500px para 470px */
     margin-top: 0; /* Resetar margem padrão */
-    margin-bottom: 20px; /* Espaçamento antes do CTA */
+    margin-bottom: 20px; /* Ajustado de 24px para 20px */
     /* transition: transform 0.3s ease; REMOVIDO PARA PARALLAX */
 }
 
 /* CTA (Call to Action) Button para os novos cards */
 .val-card__cta {
     display: inline-block;
-    padding: 10px 24px;
+    padding: 10px 24px; /* Ajustado de 12px 28px para 10px 24px */
     border: 1px solid #e61a1a; /* Borda vermelha */
     border-radius: 9999px; /* rounded-full */
     color: var(--primary-color); /* Texto branco */
     background-color: transparent; /* Fundo transparente */
     text-decoration: none;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 14px; /* Ajustado de 16px para 14px */
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     z-index: 3; /* Garante que o botão esteja acima do brilho */
     position: relative; /* Necessário para z-index funcionar */
@@ -589,19 +620,19 @@ h1, h2, h3, h4, h5, h6 {
 /* Esta regra garante que os botões ocupem a largura total em telas menores */
 .home-buttons-container .btn {
     width: 100%; /* Garante que ambos os botões ocupem a largura total disponível */
-    max-width: 300px; /* Adicionado: Limita a largura máxima em telas menores também, se desejar */
+    max-width: 320px; /* Ajustado de 350px para 320px */
 }
 
 .btn {
     font-weight: 700; /* font-bold */
-    padding: 1rem 2rem; /* py-4 px-8 */
+    padding: 1rem 2rem; /* Ajustado de 1.1rem 2.2rem para 1rem 2rem */
     border-radius: 9999px; /* rounded-full */
     transition: all 0.3s ease; /* transition duration-300 */
     transform: scale(1); /* transform */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
     cursor: pointer;
     border: none;
-    font-size: 1rem; /* Adicionado para definir um tamanho de fonte padrão */
+    font-size: 1rem; /* Ajustado de 1.1rem para 1rem */
 }
 
 .btn:hover {
@@ -1385,26 +1416,26 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .home-title {
-        font-size: 3rem; /* md:text-5xl */
+        font-size: 3.25rem; /* Ajustado de 3.5rem para 3.25rem */
     }
 
     .home-subtitle {
-        font-size: 1.5rem; /* md:text-2xl */
+        font-size: 1.6rem; /* Ajustado de 1.75rem para 1.6rem */
     }
 
     .val-cards-grid { /* Ajuste para grid em telas maiores */
         grid-template-columns: repeat(3, 1fr); /* 3 colunas */
-        gap: 24px; /* Espaçamento entre os cards */
+        gap: 28px; /* Ajustado de 32px para 28px */
     }
 
     .home-buttons-container {
         flex-direction: row; /* md:flex-row */
-        gap: 2rem; /* md:space-x-8 */
+        gap: 2rem; /* Ajustado de 2.5rem para 2rem */
         margin-top: 0; /* md:space-y-0 */
     }
     /* Em telas maiores, vamos dar uma largura fixa ou máxima para os botões */
     .home-buttons-container .btn {
-        width: 220px; /* Ajuste este valor para a largura desejada em telas maiores */
+        width: 230px; /* Ajustado de 250px para 230px */
         flex-grow: 0;
         flex-shrink: 0;
     }
@@ -1530,5 +1561,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (min-width: 1024px) { /* lg: */
-    /* Adicione estilos específicos para telas maiores se necessário */
+    .home-title {
+        font-size: 3.75rem; /* Ajustado de 4rem para 3.75rem */
+    }
+
+    .home-subtitle {
+        font-size: 1.85rem; /* Ajustado de 2rem para 1.85rem */
+    }
+
+    .val-cards-grid {
+        gap: 32px; /* Ajustado de 40px para 32px */
+    }
+
+    .home-buttons-container .btn {
+        width: 250px; /* Ajustado de 280px para 250px */
+    }
 }

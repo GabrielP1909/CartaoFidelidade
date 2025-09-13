@@ -70,30 +70,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funções de Controle de Visibilidade de Seções ---
     const showSection = (sectionToShow) => {
-        // Esconde todas as seções principais com transição
+        // Oculta todas as seções com transição
         [homePage, loginPage, registerPage, clientPanel].forEach(section => {
-            section.classList.remove('active');
-            section.classList.add('hidden');
+            if (section !== sectionToShow) {
+                section.classList.remove('active');
+                // Adiciona a classe 'hidden' após um pequeno delay para permitir a transição de saída
+                setTimeout(() => {
+                    section.classList.add('hidden');
+                }, 500); // Deve ser igual ou maior que a duração da transição CSS
+            }
         });
 
-        // Mostra a seção desejada com transição
+        // Remove 'hidden' imediatamente para que a transição de entrada possa começar
         sectionToShow.classList.remove('hidden');
         // Força o reflow para garantir que a transição ocorra
         void sectionToShow.offsetWidth;
+        // Adiciona 'active' para iniciar a transição de entrada
         sectionToShow.classList.add('active');
 
         // Fecha o menu lateral se estiver aberto
         if (sidebarMenu.classList.contains('active')) {
             sidebarMenu.classList.remove('active');
-            // Não remove no-scroll aqui, pois showSection pode ser chamado de dentro de um modal
-            // A função hideModal ou closeSidebar lida com isso.
         }
         // Garante que o scroll do body seja reativado ao mudar de seção,
         // mas apenas se não houver um modal aberto.
         if (!document.querySelector('.modal-overlay:not(.hidden)')) {
             enableBodyScroll(); // Usa a função para reabilitar o scroll
         }
-
 
         // Ao mudar de seção, remove o efeito 'is-in-view' de todos os cards
         // para garantir um estado limpo ao retornar à homePage

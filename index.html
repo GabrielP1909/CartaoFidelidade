@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,19 +8,19 @@
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- QRCode.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    
-    <!-- Link Js-->
-    <script src="script.js"></script>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Link para o arquivo CSS externo -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- Cabeçalho -->
     <header class="header-gradient sticky-top">
@@ -42,12 +43,13 @@
                 <i class="fas fa-bars"></i> <!-- Ícone de 3 riscos -->
             </button>
         </div>
-        
+
         <!-- Novo Menu Lateral (Sidebar) -->
         <div id="sidebarMenu" class="sidebar-menu">
             <button id="closeSidebarBtn" class="close-sidebar-button">&times;</button>
             <ul class="sidebar-menu-list">
-                <li><a href="#" class="sidebar-menu-link">Início</a></li> <!-- Link "Início" adicionado ao menu lateral -->
+                <li><a href="#" class="sidebar-menu-link">Início</a></li>
+                <!-- Link "Início" adicionado ao menu lateral -->
                 <li>
                     <button id="loginBtnSidebar" class="btn btn-primary btn-full btn-shine sidebar-menu-link">
                         Entrar
@@ -66,50 +68,71 @@
     <!-- Conteúdo Principal -->
     <main class="container main-content">
         <!-- Página Inicial -->
-        <section id="homePage" class="section-transition home-page"> <!-- Adicionei a classe home-page aqui -->
+        <section id="homePage" class="section-transition home-page active"> <!-- Adicionei a classe home-page aqui -->
             <div class="home-page-content">
                 <h2 class="home-title">Cartão Fidelidade Valkirias</h2>
                 <p class="home-subtitle">Acumule pontos a cada compra e ganhe recompensas exclusivas!</p>
-                
+
                 <!-- Cards Independentes com nova estética -->
                 <div class="val-cards-grid">
                     <!-- Card 1: Compre -->
                     <div class="card">
-                        <div class="container-card bg-red-box">
+                        <div class="container-card bg-red-box btn-shine">
                             <div class="card-icon-wrapper">
                                 <i class="fas fa-pizza-slice"></i>
                             </div>
                             <p class="card-title">Compre</p>
                             <p class="card-description">Faça seus pedidos na pizzaria e comece a acumular pontos.</p>
-                            <a class="val-card__cta open-modal-btn btn-shine" href="#" data-modal-target="compreModal">Saiba Mais</a>
+                            <a class="val-card__cta open-modal-btn btn-shine" href="javascript:void(0)"
+                                data-modal-target="compreModal">Saiba Mais</a>
+                            <script>
+                                function abrirModal(event) {
+                                    event.preventDefault(); // Isso impede que a página suba para o topo
+                                    // Seu código para abrir o modal aqui
+                                }
+                            </script>
                         </div>
                     </div>
 
                     <!-- Card 2: Acumule -->
                     <div class="card">
-                        <div class="container-card bg-red-box">
+                        <div class="container-card bg-red-box btn-shine">
                             <div class="card-icon-wrapper">
                                 <i class="fas fa-star"></i>
                             </div>
                             <p class="card-title">Acumule</p>
                             <p class="card-description">Some e marque pontos no nosso cartão fidelidade digital.</p>
-                            <a class="val-card__cta open-modal-btn btn-shine" href="#" data-modal-target="acumuleModal">Saiba Mais</a>
+                            <a class="val-card__cta open-modal-btn btn-shine" href="javascript:void(0)"
+                                data-modal-target="acumuleModal">Saiba Mais</a>
+                            <script>
+                                function abrirModal(event) {
+                                    event.preventDefault(); // Isso impede que a página suba para o topo
+                                    // Seu código para abrir o modal aqui
+                                }
+                            </script>
                         </div>
                     </div>
 
                     <!-- Card 3: Resgate -->
                     <div class="card">
-                        <div class="container-card bg-red-box">
+                        <div class="container-card bg-red-box btn-shine">
                             <div class="card-icon-wrapper">
                                 <i class="fas fa-gift"></i>
                             </div>
                             <p class="card-title">Resgate</p>
                             <p class="card-description">Troque seus pontos por recompensas e descontos exclusivos.</p>
-                            <a class="val-card__cta open-modal-btn btn-shine" href="#" data-modal-target="resgateModal">Saiba Mais</a>
+                            <a class="val-card__cta open-modal-btn btn-shine" href="javascript:void(0)"
+                                data-modal-target="resgateModal">Saiba Mais</a>
+                            <script>
+                                function abrirModal(event) {
+                                    event.preventDefault(); // Isso impede que a página suba para o topo
+                                    // Seu código para abrir o modal aqui
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="home-buttons-container">
                     <button id="loginBtn" class="btn btn-primary btn-shine">
                         Já sou cliente
@@ -122,92 +145,102 @@
         </section>
 
         <!-- Formulário de Login -->
-        <section id="loginPage" class="section-transition hidden form-section">
+        <section id="loginPage" class="section-transition form-section">
             <h2 class="form-title">Acesse sua conta</h2>
-            
+
             <form id="loginForm">
                 <div class="form-group">
                     <label for="loginEmail" class="form-label">E-mail ou telefone</label>
-                    <input type="text" id="loginEmail" class="form-input input-modern" placeholder="Seu e-mail ou telefone">
+                    <input type="text" id="loginEmail" class="form-input input-modern"
+                        placeholder="Seu e-mail ou telefone">
                 </div>
-                
+
                 <div class="form-group mb-8">
                     <label for="loginPassword" class="form-label">Senha</label>
                     <input type="password" id="loginPassword" class="form-input input-modern" placeholder="Sua senha">
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary btn-full btn-shine mb-6">
                     Entrar
                 </button>
-                
+
                 <div class="text-center">
                     <a href="#" id="forgotPasswordBtn" class="link-accent">Esqueci minha senha</a>
                 </div>
             </form>
-            
+
             <div class="form-footer">
-                <p class="text-gray-light">Não tem uma conta? <a href="#" id="goToRegisterBtn" class="link-accent">Cadastre-se</a></p>
+                <p class="text-gray-light">Não tem uma conta? <a href="#" id="goToRegisterBtn"
+                        class="link-accent">Cadastre-se</a></p>
             </div>
         </section>
 
         <!-- Formulário de Cadastro -->
-        <section id="registerPage" class="section-transition hidden form-section">
+        <section id="registerPage" class="section-transition form-section">
             <h2 class="form-title">Crie sua conta</h2>
-            
+
             <form id="registerForm">
                 <div class="form-group">
                     <label for="registerName" class="form-label">Nome completo</label>
-                    <input type="text" id="registerName" class="form-input input-modern" placeholder="Seu nome completo" required>
+                    <input type="text" id="registerName" class="form-input input-modern" placeholder="Seu nome completo"
+                        required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="registerPhone" class="form-label">Telefone</label>
-                    <input type="tel" id="registerPhone" class="form-input input-modern" placeholder="(XX) XXXXX-XXXX" required>
+                    <input type="tel" id="registerPhone" class="form-input input-modern" placeholder="(XX) XXXXX-XXXX"
+                        required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="registerEmail" class="form-label">E-mail</label>
-                    <input type="email" id="registerEmail" class="form-input input-modern" placeholder="seu.email@example.com" required>
+                    <input type="email" id="registerEmail" class="form-input input-modern"
+                        placeholder="seu.email@example.com" required>
                 </div>
-                
-                <div class="form-group"> 
+
+                <div class="form-group">
                     <label for="registerPassword" class="form-label">Senha</label>
-                    <input type="password" id="registerPassword" class="form-input input-modern" placeholder="Crie uma senha" required>
+                    <input type="password" id="registerPassword" class="form-input input-modern"
+                        placeholder="Crie uma senha" required>
                 </div>
-                
-                <div class="form-group mb-8"> 
+
+                <div class="form-group mb-8">
                     <label for="registerConfirmPassword" class="form-label">Confirme sua senha</label>
-                    <input type="password" id="registerConfirmPassword" class="form-input input-modern" placeholder="Confirme sua senha" required>
+                    <input type="password" id="registerConfirmPassword" class="form-input input-modern"
+                        placeholder="Confirme sua senha" required>
                 </div>
-                
+
                 <div class="form-group mb-8">
                     <label class="checkbox-label">
                         <input type="checkbox" class="form-checkbox" required>
-                        <span class="checkbox-text">Li e aceito os <a href="#" class="link-accent">Termos de Uso</a> e <a href="#" class="link-accent">Política de Privacidade</a></span>
+                        <span class="checkbox-text">Li e aceito os <a href="#" class="link-accent">Termos de Uso</a> e
+                            <a href="#" class="link-accent">Política de Privacidade</a></span>
                     </label>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary btn-full btn-shine">
                     Cadastrar
                 </button>
             </form>
-            
+
             <div class="form-footer">
-                <p class="text-gray-light">Não tem uma conta? <a href="#" id="goToLoginBtn" class="link-accent">Faça login</a></p>
+                <p class="text-gray-light">Não tem uma conta? <a href="#" id="goToLoginBtn" class="link-accent">Faça
+                        login</a></p>
             </div>
         </section>
 
         <!-- Painel do Cliente -->
-        <section id="clientPanel" class="section-transition hidden client-panel">
+        <section id="clientPanel" class="section-transition client-panel">
             <div class="client-panel-layout">
                 <!-- Sidebar -->
                 <div class="client-panel-sidebar">
                     <div class="client-profile-summary">
-                        <img src="https://placehold.co/120x120/1A1A1A/F0F0F0?text=JS" alt="Foto de perfil do usuário" class="client-profile-avatar">
+                        <img src="https://placehold.co/120x120/1A1A1A/F0F0F0?text=JS" alt="Foto de perfil do usuário"
+                            class="client-profile-avatar">
                         <h3 id="clientName" class="client-name">Nome do Cliente</h3>
                         <p id="clientEmail" class="client-email">email@cliente.com</p>
                     </div>
-                    
+
                     <nav>
                         <ul class="dashboard-nav-list">
                             <li>
@@ -242,21 +275,21 @@
                             </li>
                         </ul>
                     </nav>
-                    
+
                     <div class="qr-code-container">
                         <div id="qrcode" class="qr-code-display"></div>
                         <p class="qr-code-text">Use este QR Code para acumular pontos em suas compras</p>
                     </div>
                 </div>
-                
+
                 <!-- Conteúdo Principal do Painel (com abas) -->
                 <div class="client-panel-main-content">
                     <!-- Visão Geral -->
-                    <div id="overviewContent" class="dashboard-content"> 
+                    <div id="overviewContent" class="dashboard-content">
                         <!-- Removida a classe 'card-hover-effect' daqui -->
                         <div class="dashboard-card">
                             <h3 class="dashboard-card-title">Seus Pontos</h3>
-                            
+
                             <div class="points-summary-grid">
                                 <div class="points-summary-item">
                                     <p class="points-summary-label">Pontos Atuais</p>
@@ -271,7 +304,7 @@
                                     <p id="rewardsRedeemed" class="points-summary-value">0</p>
                                 </div>
                             </div>
-                            
+
                             <div class="progress-bar-section">
                                 <h4 class="progress-bar-title">Progresso para a Próxima Recompensa</h4>
                                 <div class="progress-bar-background">
@@ -279,14 +312,14 @@
                                 </div>
                                 <p id="progressText" class="progress-bar-text">0 de 100 pontos</p>
                             </div>
-                            
-                            <div class="text-center"> 
+
+                            <div class="text-center">
                                 <button id="addPointsBtn" class="btn btn-primary btn-shine">
                                     <i class="fas fa-plus-circle icon-margin"></i> Adicionar Pontos (Admin)
                                 </button>
                             </div>
-                        </div> 
-                    </div> 
+                        </div>
+                    </div>
 
                     <!-- Histórico de Transações -->
                     <div id="historyContent" class="dashboard-content hidden">
@@ -307,7 +340,8 @@
                             <h3 class="dashboard-card-title">Recompensas Disponíveis</h3>
                             <div id="rewardsList" class="rewards-grid">
                                 <!-- Conteúdo será preenchido via JS -->
-                                <p class="text-gray-light text-center col-span-full mt-4">Nenhuma recompensa disponível no momento.</p>
+                                <p class="text-gray-light text-center col-span-full mt-4">Nenhuma recompensa disponível
+                                    no momento.</p>
                             </div>
                         </div>
                     </div>
@@ -318,9 +352,12 @@
                         <div class="dashboard-card">
                             <h3 class="dashboard-card-title">Meu Perfil</h3>
                             <div class="profile-details">
-                                <p><span class="profile-label">Nome:</span> <span id="profileName" class="profile-value"></span></p>
-                                <p><span class="profile-label">E-mail:</span> <span id="profileEmail" class="profile-value"></span></p>
-                                <p><span class="profile-label">Telefone:</span> <span class="profile-value">Não informado</span></p>
+                                <p><span class="profile-label">Nome:</span> <span id="profileName"
+                                        class="profile-value"></span></p>
+                                <p><span class="profile-label">E-mail:</span> <span id="profileEmail"
+                                        class="profile-value"></span></p>
+                                <p><span class="profile-label">Telefone:</span> <span class="profile-value">Não
+                                        informado</span></p>
                                 <button class="btn btn-primary mt-6">
                                     Editar Perfil
                                 </button>
@@ -335,12 +372,12 @@
     <!-- Rodapé -->
     <footer class="footer">
         <div class="container footer-content">
-            <div class="footer-section"> 
+            <div class="footer-section">
                 <h4 class="footer-title">Valkirias Pizzaria</h4>
                 <p class="footer-text">Sua melhor opção em qualidade e fidelidade!</p>
                 <p class="mt-2 footer-text">Rua Tiradentes, 297 - Sapucaia do Sul, Rs</p>
             </div>
-            <div class="footer-section"> 
+            <div class="footer-section">
                 <h4 class="footer-title">Links Úteis</h4>
                 <ul class="footer-list">
                     <li><a href="#" class="footer-link">Termos de Uso</a></li>
@@ -348,7 +385,7 @@
                     <li><a href="#" class="footer-link">Contato</a></li>
                 </ul>
             </div>
-            <div class="footer-section"> 
+            <div class="footer-section">
                 <h4 class="footer-title">Siga-nos</h4>
                 <div class="social-links">
                     <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -377,7 +414,10 @@
             <button class="close-modal-btn close-sidebar-button">&times;</button>
             <h3 class="modal-title">Como Comprar e Ganhar Pontos</h3>
             <p class="modal-description">
-                É simples! Ao fazer qualquer pedido em nossa pizzaria, seja por telefone, aplicativo ou diretamente no balcão, informe seu CPF ou apresente seu QR Code de fidelidade. Cada compra se transforma em pontos que você pode acumular para trocar por recompensas incríveis. Quanto mais você compra, mais rápido você ganha!
+                É simples! Ao fazer qualquer pedido em nossa pizzaria, seja por telefone, aplicativo ou diretamente no
+                balcão, informe seu CPF ou apresente seu QR Code de fidelidade. Cada compra se transforma em pontos que
+                você pode acumular para trocar por recompensas incríveis. Quanto mais você compra, mais rápido você
+                ganha!
             </p>
             <button class="btn btn-primary btn-full close-modal-btn">Entendi!</button>
         </div>
@@ -388,7 +428,9 @@
             <button class="close-modal-btn close-sidebar-button">&times;</button>
             <h3 class="modal-title">Como Acumular Pontos</h3>
             <p class="modal-description">
-                Após cada compra, seus pontos serão automaticamente registrados em seu cartão fidelidade digital. Você pode acompanhar seu saldo de pontos e seu progresso para a próxima recompensa diretamente no seu painel de cliente. Fique de olho nas promoções especiais para acelerar seu acúmulo!
+                Após cada compra, seus pontos serão automaticamente registrados em seu cartão fidelidade digital. Você
+                pode acompanhar seu saldo de pontos e seu progresso para a próxima recompensa diretamente no seu painel
+                de cliente. Fique de olho nas promoções especiais para acelerar seu acúmulo!
             </p>
             <button class="btn btn-primary btn-full close-modal-btn">Entendi!</button>
         </div>
@@ -399,10 +441,16 @@
             <button class="close-modal-btn close-sidebar-button">&times;</button>
             <h3 class="modal-title">Como Resgatar Suas Recompensas</h3>
             <p class="modal-description">
-                Quando você atingir a quantidade de pontos necessária para uma recompensa, basta ir até a seção "Recompensas" no seu painel de cliente e selecionar o item desejado. Apresente o código de resgate gerado no balcão da pizzaria para desfrutar de sua recompensa!
+                Quando você atingir a quantidade de pontos necessária para uma recompensa, basta ir até a seção
+                "Recompensas" no seu painel de cliente e selecionar o item desejado. Apresente o código de resgate
+                gerado no balcão da pizzaria para desfrutar de sua recompensa!
             </p>
             <button class="btn btn-primary btn-full close-modal-btn">Entendi!</button>
         </div>
     </div>
+
+    <!-- Link Js (movido para o final do body para melhor performance) -->
+    <script src="script.js"></script>
 </body>
+
 </html>
