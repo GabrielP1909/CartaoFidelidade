@@ -3,14 +3,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Referências aos elementos HTML
     const homePage = document.getElementById('homePage');
-    const loginPage = document.getElementById('loginPage');
-    const registerPage = document.getElementById('registerPage');
+    // Removidas as referências diretas a loginPage e registerPage como seções
     const clientPanel = document.getElementById('clientPanel');
 
-    const loginBtn = document.getElementById('loginBtn'); // Botão de login na home
-    const registerBtn = document.getElementById('registerBtn'); // Botão de registro na home
-    const goToRegisterBtn = document.getElementById('goToRegisterBtn');
-    const goToLoginBtn = document.getElementById('goToLoginBtn');
+    // Botões da home page (agora abrem modais)
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+
     const logoutBtn = document.getElementById('logoutBtn');
 
     // Novos elementos para o menu lateral (sidebar)
@@ -20,12 +19,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('header'); // Mantido para ajuste de posição da sidebar
     const valkiriasLogo = document.getElementById('valkiriasLogo');
 
-    // Novos botões de login/registro no menu lateral
+    // Novos botões de login/registro no menu lateral (agora abrem modais)
     const loginBtnSidebar = document.getElementById('loginBtnSidebar');
     const registerBtnSidebar = document.getElementById('registerBtnSidebar');
 
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
+    // Referências aos novos modais de Login e Registro
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+
+    // Formulários dentro dos modais
+    const loginFormModal = document.getElementById('loginFormModal');
+    const registerFormModal = document.getElementById('registerFormModal');
+
+    // Links de navegação dentro dos modais de login/registro
+    const goToRegisterBtnModal = document.getElementById('goToRegisterBtnModal');
+    const goToLoginBtnModal = document.getElementById('goToLoginBtnModal');
 
     const clientName = document.getElementById('clientName');
     const clientEmail = document.getElementById('clientEmail');
@@ -70,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funções de Controle de Visibilidade de Seções ---
     const showSection = (sectionToShow) => {
-        // Oculta todas as seções com transição
-        [homePage, loginPage, registerPage, clientPanel].forEach(section => {
+        // Oculta todas as seções principais com transição
+        [homePage, clientPanel].forEach(section => { // Apenas seções principais
             if (section !== sectionToShow) {
                 section.classList.remove('active');
                 // Adiciona a classe 'hidden' após um pequeno delay para permitir a transição de saída
@@ -258,8 +266,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Adicionar links de formulários que não são <a> mas levam a seções
-        uniqueLinks.set('login', { href: '#loginPage', text: 'Página de Login' });
-        uniqueLinks.set('register', { href: '#registerPage', text: 'Página de Cadastro' });
+        // Estes agora abrem modais, então o href deve ser o ID do modal
+        uniqueLinks.set('login', { href: '#loginModal', text: 'Página de Login' });
+        uniqueLinks.set('register', { href: '#registerModal', text: 'Página de Cadastro' });
         uniqueLinks.set('clientpanel', { href: '#clientPanel', text: 'Painel do Cliente (Apenas para Teste)' });
 
 
@@ -275,9 +284,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Se for um link de seção, mostra a seção
                 if (linkData.href.startsWith('#')) {
                     const targetId = linkData.href.substring(1);
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        showSection(targetSection);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        // Se for um modal, abre o modal
+                        if (targetElement.classList.contains('modal-overlay')) {
+                            showModal(targetElement);
+                        } else { // Se for uma seção principal
+                            showSection(targetElement);
+                        }
                     }
                 } else {
                     // Para links externos ou outros, redireciona
@@ -387,7 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                  modalElement.id === 'resgateModal';
 
         // Desabilita o scroll apenas se for mobile OU se não for um modal de "Saiba Mais"
-        if (window.innerWidth < 768 || !isSaibaMaisModal) {
+        // OU se for um modal de login/registro (sempre desabilita o scroll)
+        if (window.innerWidth < 768 || !isSaibaMaisModal || modalElement.id === 'loginModal' || modalElement.id === 'registerModal') {
             disableBodyScroll(); // Impede a rolagem do body e mantém a posição
         } else {
             // Se for um modal de "Saiba Mais" e for desktop, não desabilita o scroll do body.
@@ -462,7 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reabilita o scroll apenas se ele foi desabilitado por showModal
         // Ou seja, se a largura da janela for menor que 768px OU se não for um modal de "Saiba Mais"
-        if (window.innerWidth < 768 || !isSaibaMaisModal) {
+        // OU se for um modal de login/registro (sempre desabilita o scroll)
+        if (window.innerWidth < 768 || !isSaibaMaisModal || modalElement.id === 'loginModal' || modalElement.id === 'registerModal') {
             enableBodyScroll(); // Reabilita o scroll do body e restaura a posição
         } else {
             // Se for um modal de "Saiba Mais" e for desktop, apenas esconde o overlay
@@ -491,33 +507,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
 
-    // Navegação principal (botões da home page)
+    // Navegação principal (botões da home page) - AGORA ABREM MODAIS
     if (loginBtn) {
-        loginBtn.addEventListener('click', () => showSection(loginPage));
+        loginBtn.addEventListener('click', () => showModal(loginModal));
     }
     if (registerBtn) {
-        registerBtn.addEventListener('click', () => showSection(registerPage));
+        registerBtn.addEventListener('click', () => showModal(registerModal));
     }
 
-    // Botões de login/registro no menu lateral (sidebar)
+    // Botões de login/registro no menu lateral (sidebar) - AGORA ABREM MODAIS
     if (loginBtnSidebar) {
-        loginBtnSidebar.addEventListener('click', () => showSection(loginPage));
+        loginBtnSidebar.addEventListener('click', () => showModal(loginModal));
     }
     if (registerBtnSidebar) {
-        registerBtnSidebar.addEventListener('click', () => showSection(registerPage));
+        registerBtnSidebar.addEventListener('click', () => showModal(registerModal));
     }
 
-    // Navegação dentro dos formulários
-    if (goToRegisterBtn) {
-        goToRegisterBtn.addEventListener('click', (e) => {
+    // Navegação dentro dos modais de login/registro
+    if (goToRegisterBtnModal) {
+        goToRegisterBtnModal.addEventListener('click', (e) => {
             e.preventDefault();
-            showSection(registerPage);
+            hideModal(loginModal); // Fecha o modal de login
+            showModal(registerModal); // Abre o modal de registro
         });
     }
-    if (goToLoginBtn) {
-        goToLoginBtn.addEventListener('click', (e) => {
+    if (goToLoginBtnModal) {
+        goToLoginBtnModal.addEventListener('click', (e) => {
             e.preventDefault();
-            showSection(loginPage);
+            hideModal(registerModal); // Fecha o modal de registro
+            showModal(loginModal); // Abre o modal de login
         });
     }
 
@@ -539,9 +557,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fechar sidebar ao clicar em um link dentro dela
     const sidebarLinks = sidebarMenu.querySelectorAll('a, button');
     sidebarLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            // Apenas fechar se não for um botão de login/registro que já muda de seção
-            if (!link.classList.contains('btn')) {
+        link.addEventListener('click', (e) => {
+            // Se o link tem um atributo data-section-target, ele é um link de navegação de seção
+            const sectionTarget = link.dataset.sectionTarget;
+            if (sectionTarget) {
+                e.preventDefault(); // Previne o comportamento padrão do link
+                const targetSection = document.getElementById(sectionTarget);
+                if (targetSection) {
+                    showSection(targetSection);
+                }
+            }
+            // Apenas fechar se não for um botão de login/registro que já abre um modal
+            if (!link.classList.contains('open-modal-btn')) {
                 sidebarMenu.classList.remove('active');
                 enableBodyScroll();
             }
@@ -565,12 +592,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Simulação de Login
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+    // Simulação de Login (agora para o modal)
+    if (loginFormModal) {
+        loginFormModal.addEventListener('submit', (e) => {
             e.preventDefault();
-            const loginEmail = document.getElementById('loginEmail').value;
-            const loginPassword = document.getElementById('loginPassword').value;
+            const loginEmail = document.getElementById('loginEmailModal').value;
+            const loginPassword = document.getElementById('loginPasswordModal').value;
 
             if (loginEmail === 'teste@valkirias.com' && loginPassword === '123') {
                 const userData = {
@@ -587,7 +614,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     ]
                 };
                 updateClientPanel(userData);
-                showSection(clientPanel);
+                hideModal(loginModal); // Fecha o modal de login
+                showSection(clientPanel); // Mostra o painel do cliente
                 // Ativa a primeira aba do dashboard por padrão
                 if (dashboardNavItems.length > 0) {
                     dashboardNavItems[0].click();
@@ -598,22 +626,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Simulação de Registro
-    if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+    // Simulação de Registro (agora para o modal)
+    if (registerFormModal) {
+        registerFormModal.addEventListener('submit', (e) => {
             e.preventDefault();
-            const registerName = document.getElementById('registerName').value;
-            const registerPhone = document.getElementById('registerPhone').value;
-            const registerEmail = document.getElementById('registerEmail').value;
-            const registerPassword = document.getElementById('registerPassword').value;
-            const registerConfirmPassword = document.getElementById('registerConfirmPassword').value;
+            const registerName = document.getElementById('registerNameModal').value;
+            const registerPhone = document.getElementById('registerPhoneModal').value;
+            const registerEmail = document.getElementById('registerEmailModal').value;
+            const registerPassword = document.getElementById('registerPasswordModal').value;
+            const registerConfirmPassword = document.getElementById('registerConfirmPasswordModal').value;
 
             if (registerPassword !== registerConfirmPassword) {
                 alert('As senhas não coincidem!');
                 return;
             }
             alert(`Cadastro de ${registerName} realizado com sucesso! Faça login para acessar sua conta.`);
-            showSection(loginPage);
+            hideModal(registerModal); // Fecha o modal de registro
+            showModal(loginModal); // Abre o modal de login
         });
     }
 
@@ -676,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault(); // Impede o comportamento padrão do link
             const modalId = e.currentTarget.dataset.modalTarget;
             const modal = document.getElementById(modalId);
-            // Encontra o elemento 'card' pai do botão clicado
+            // Encontra o elemento 'card' pai do botão clicado, se houver
             const cardElement = e.currentTarget.closest('.card');
             if (modal) {
                 showModal(modal, cardElement); // Passa o cardElement para posicionar o modal

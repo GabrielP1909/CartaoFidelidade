@@ -48,15 +48,15 @@
         <div id="sidebarMenu" class="sidebar-menu">
             <button id="closeSidebarBtn" class="close-sidebar-button">&times;</button>
             <ul class="sidebar-menu-list">
-                <li><a href="#" class="sidebar-menu-link">Início</a></li>
+                <li><a href="#" class="sidebar-menu-link" data-section-target="homePage">Início</a></li>
                 <!-- Link "Início" adicionado ao menu lateral -->
                 <li>
-                    <button id="loginBtnSidebar" class="btn btn-primary btn-full btn-shine sidebar-menu-link">
+                    <button id="loginBtnSidebar" class="btn btn-primary btn-full btn-shine sidebar-menu-link open-modal-btn" data-modal-target="loginModal">
                         Entrar
                     </button>
                 </li>
                 <li>
-                    <button id="registerBtnSidebar" class="btn btn-secondary btn-full btn-shine sidebar-menu-link">
+                    <button id="registerBtnSidebar" class="btn btn-secondary btn-full btn-shine sidebar-menu-link open-modal-btn" data-modal-target="registerModal">
                         Cadastrar
                     </button>
                 </li>
@@ -85,12 +85,6 @@
                             <p class="card-description">Faça seus pedidos na pizzaria e comece a acumular pontos.</p>
                             <a class="val-card__cta open-modal-btn btn-shine" href="javascript:void(0)"
                                 data-modal-target="compreModal">Saiba Mais</a>
-                            <script>
-                                function abrirModal(event) {
-                                    event.preventDefault(); // Isso impede que a página suba para o topo
-                                    // Seu código para abrir o modal aqui
-                                }
-                            </script>
                         </div>
                     </div>
 
@@ -104,12 +98,6 @@
                             <p class="card-description">Some e marque pontos no nosso cartão fidelidade digital.</p>
                             <a class="val-card__cta open-modal-btn btn-shine" href="javascript:void(0)"
                                 data-modal-target="acumuleModal">Saiba Mais</a>
-                            <script>
-                                function abrirModal(event) {
-                                    event.preventDefault(); // Isso impede que a página suba para o topo
-                                    // Seu código para abrir o modal aqui
-                                }
-                            </script>
                         </div>
                     </div>
 
@@ -123,109 +111,18 @@
                             <p class="card-description">Troque seus pontos por recompensas e descontos exclusivos.</p>
                             <a class="val-card__cta open-modal-btn btn-shine" href="javascript:void(0)"
                                 data-modal-target="resgateModal">Saiba Mais</a>
-                            <script>
-                                function abrirModal(event) {
-                                    event.preventDefault(); // Isso impede que a página suba para o topo
-                                    // Seu código para abrir o modal aqui
-                                }
-                            </script>
                         </div>
                     </div>
                 </div>
 
                 <div class="home-buttons-container">
-                    <button id="loginBtn" class="btn btn-primary btn-shine">
+                    <button id="loginBtn" class="btn btn-primary btn-shine open-modal-btn" data-modal-target="loginModal">
                         Já sou cliente
                     </button>
-                    <button id="registerBtn" class="btn btn-secondary btn-shine">
+                    <button id="registerBtn" class="btn btn-secondary btn-shine open-modal-btn" data-modal-target="registerModal">
                         Quero me cadastrar
                     </button>
                 </div>
-            </div>
-        </section>
-
-        <!-- Formulário de Login -->
-        <section id="loginPage" class="section-transition form-section">
-            <h2 class="form-title">Acesse sua conta</h2>
-
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail" class="form-label">E-mail ou telefone</label>
-                    <input type="text" id="loginEmail" class="form-input input-modern"
-                        placeholder="Seu e-mail ou telefone">
-                </div>
-
-                <div class="form-group mb-8">
-                    <label for="loginPassword" class="form-label">Senha</label>
-                    <input type="password" id="loginPassword" class="form-input input-modern" placeholder="Sua senha">
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-full btn-shine mb-6">
-                    Entrar
-                </button>
-
-                <div class="text-center">
-                    <a href="#" id="forgotPasswordBtn" class="link-accent">Esqueci minha senha</a>
-                </div>
-            </form>
-
-            <div class="form-footer">
-                <p class="text-gray-light">Não tem uma conta? <a href="#" id="goToRegisterBtn"
-                        class="link-accent">Cadastre-se</a></p>
-            </div>
-        </section>
-
-        <!-- Formulário de Cadastro -->
-        <section id="registerPage" class="section-transition form-section">
-            <h2 class="form-title">Crie sua conta</h2>
-
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="registerName" class="form-label">Nome completo</label>
-                    <input type="text" id="registerName" class="form-input input-modern" placeholder="Seu nome completo"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label for="registerPhone" class="form-label">Telefone</label>
-                    <input type="tel" id="registerPhone" class="form-input input-modern" placeholder="(XX) XXXXX-XXXX"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label for="registerEmail" class="form-label">E-mail</label>
-                    <input type="email" id="registerEmail" class="form-input input-modern"
-                        placeholder="seu.email@example.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="registerPassword" class="form-label">Senha</label>
-                    <input type="password" id="registerPassword" class="form-input input-modern"
-                        placeholder="Crie uma senha" required>
-                </div>
-
-                <div class="form-group mb-8">
-                    <label for="registerConfirmPassword" class="form-label">Confirme sua senha</label>
-                    <input type="password" id="registerConfirmPassword" class="form-input input-modern"
-                        placeholder="Confirme sua senha" required>
-                </div>
-
-                <div class="form-group mb-8">
-                    <label class="checkbox-label">
-                        <input type="checkbox" class="form-checkbox" required>
-                        <span class="checkbox-text">Li e aceito os <a href="#" class="link-accent">Termos de Uso</a> e
-                            <a href="#" class="link-accent">Política de Privacidade</a></span>
-                    </label>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-full btn-shine">
-                    Cadastrar
-                </button>
-            </form>
-
-            <div class="form-footer">
-                <p class="text-gray-light">Não tem uma conta? <a href="#" id="goToLoginBtn" class="link-accent">Faça
-                        login</a></p>
             </div>
         </section>
 
@@ -446,6 +343,97 @@
                 gerado no balcão da pizzaria para desfrutar de sua recompensa!
             </p>
             <button class="btn btn-primary btn-full close-modal-btn">Entendi!</button>
+        </div>
+    </div>
+
+    <!-- NOVO: Modal de Login -->
+    <div id="loginModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn close-sidebar-button">&times;</button>
+            <h2 class="form-title">Acesse sua conta</h2>
+
+            <form id="loginFormModal">
+                <div class="form-group">
+                    <label for="loginEmailModal" class="form-label">E-mail ou telefone</label>
+                    <input type="text" id="loginEmailModal" class="form-input input-modern"
+                        placeholder="Seu e-mail ou telefone">
+                </div>
+
+                <div class="form-group mb-8">
+                    <label for="loginPasswordModal" class="form-label">Senha</label>
+                    <input type="password" id="loginPasswordModal" class="form-input input-modern" placeholder="Sua senha">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-shine mb-6">
+                    Entrar
+                </button>
+
+                <div class="text-center">
+                    <a href="#" id="forgotPasswordBtnModal" class="link-accent">Esqueci minha senha</a>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                <p class="text-gray-light">Não tem uma conta? <a href="#" id="goToRegisterBtnModal"
+                        class="link-accent open-modal-btn" data-modal-target="registerModal">Cadastre-se</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO: Modal de Cadastro -->
+    <div id="registerModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn close-sidebar-button">&times;</button>
+            <h2 class="form-title">Crie sua conta</h2>
+
+            <form id="registerFormModal">
+                <div class="form-group">
+                    <label for="registerNameModal" class="form-label">Nome completo</label>
+                    <input type="text" id="registerNameModal" class="form-input input-modern" placeholder="Seu nome completo"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPhoneModal" class="form-label">Telefone</label>
+                    <input type="tel" id="registerPhoneModal" class="form-input input-modern" placeholder="(XX) XXXXX-XXXX"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmailModal" class="form-label">E-mail</label>
+                    <input type="email" id="registerEmailModal" class="form-input input-modern"
+                        placeholder="seu.email@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPasswordModal" class="form-label">Senha</label>
+                    <input type="password" id="registerPasswordModal" class="form-input input-modern"
+                        placeholder="Crie uma senha" required>
+                </div>
+
+                <div class="form-group mb-8">
+                    <label for="registerConfirmPasswordModal" class="form-label">Confirme sua senha</label>
+                    <input type="password" id="registerConfirmPasswordModal" class="form-input input-modern"
+                        placeholder="Confirme sua senha" required>
+                </div>
+
+                <div class="form-group mb-8">
+                    <label class="checkbox-label">
+                        <input type="checkbox" class="form-checkbox" required>
+                        <span class="checkbox-text">Li e aceito os <a href="#" class="link-accent">Termos de Uso</a> e
+                            <a href="#" class="link-accent">Política de Privacidade</a></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-shine">
+                    Cadastrar
+                </button>
+            </form>
+
+            <div class="form-footer">
+                <p class="text-gray-light">Já tem uma conta? <a href="#" id="goToLoginBtnModal" class="link-accent open-modal-btn" data-modal-target="loginModal">Faça
+                        login</a></p>
+            </div>
         </div>
     </div>
 

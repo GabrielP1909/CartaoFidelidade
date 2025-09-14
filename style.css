@@ -162,6 +162,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.75rem 1.25rem; /* py-3 px-5 */
     border-radius: 0.5rem; /* rounded-lg */
     width: 100%; /* w-full */
+    box-sizing: border-box; /* Adicionado para incluir padding e borda na largura */
 }
 
 .input-modern::placeholder {
@@ -1060,10 +1061,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal-content {
     background-color: var(--dark-surface); /* Revertido para o original */
-    padding: 2rem;
+    padding: 2rem; /* Ajustado para um padding mais consistente */
     border-radius: 0.75rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* Revertido para o original */
-    max-width: 24rem;
+    max-width: 24rem; /* Ajustado para 24rem para modais de login/cadastro */
     width: 100%;
     text-align: center;
     border: 1px solid var(--gray-dark); /* Revertido para o original */
@@ -1072,6 +1073,11 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(0.95); /* Mantido para a animação */
     opacity: 0; /* Mantido para a animação */
     animation: modal-fade-in 0.3s ease-out forwards; /* Mantido para a animação */
+    box-sizing: border-box; /* Garante que padding e borda não aumentem a largura */
+
+    /* NOVO: Adicionado para controlar a altura e rolagem */
+    max-height: unset; /* Remove o limite de altura */
+    overflow-y: visible; /* Garante que o conteúdo não seja cortado e não haja scroll */
 }
 
 /* Animação de entrada do modal */
@@ -1191,6 +1197,11 @@ h1, h2, h3, h4, h5, h6 {
     right: 1rem;
     font-size: 2rem; /* Ajusta o tamanho para o contexto do modal */
     margin-bottom: 0; /* Remove a margem inferior que estava empurrando o título */
+}
+
+/* NOVO: Ajuste de largura para o modal de "Todos os Links" */
+#allLinksModal .modal-content {
+    max-width: 24rem; /* Mesma largura dos modais de login/cadastro em mobile */
 }
 
 
@@ -1510,19 +1521,9 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .modal-content {
-        background-color: var(--dark-surface); /* Revertido para o original */
-        padding: 2rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* Revertido para o original */
-        max-width: 24rem;
-        width: 100%;
-        text-align: center;
-        border: 1px solid var(--gray-dark); /* Revertido para o original */
-        position: relative;
-        /* Removendo os estilos de gradiente e sombra adicionais */
-        transform: scale(0.95); /* Mantido para a animação */
-        opacity: 0; /* Mantido para a animação */
-        animation: modal-fade-in 0.3s ease-out forwards; /* Mantido para a animação */
+        max-width: 28rem; /* Aumentado para 28rem em desktop para modais de login/cadastro */
+        /* max-height: unset; */ /* Garante que não haja limite de altura em desktop */
+        /* overflow-y: visible; */ /* Garante que o conteúdo não seja cortado e não haja scroll em desktop */
     }
 
     .modal-title {
@@ -1558,6 +1559,11 @@ h1, h2, h3, h4, h5, h6 {
     .social-links {
         justify-content: flex-start; /* Alinha à esquerda em desktop */
     }
+
+    /* NOVO: Ajuste de largura para o modal de "Todos os Links" em desktop */
+    #allLinksModal .modal-content {
+        max-width: 28rem; /* Mesma largura dos modais de login/cadastro em desktop */
+    }
 }
 
 @media (min-width: 1024px) { /* lg: */
@@ -1576,4 +1582,59 @@ h1, h2, h3, h4, h5, h6 {
     .home-buttons-container .btn {
         width: 250px; /* Ajustado de 280px para 250px */
     }
+}
+
+/* --- Estilos para a Barra de Rolagem (Scrollbar) --- */
+
+/* Para navegadores WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 8px; /* Largura da barra de rolagem vertical */
+    height: 8px; /* Altura da barra de rolagem horizontal */
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-surface); /* Cor do fundo da trilha da barra de rolagem */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-medium); /* Cor do "polegar" (a parte que você arrasta) */
+    border-radius: 10px;
+    border: 2px solid var(--dark-surface); /* Borda para dar um efeito 3D sutil */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color); /* Cor do "polegar" ao passar o mouse */
+}
+
+/* Para Firefox */
+/* Nota: Firefox tem menos opções de personalização. */
+/* scrollbar-width: thin | auto | none; */
+/* scrollbar-color: thumb-color track-color; */
+html {
+    scrollbar-width: thin; /* "thin" ou "auto" */
+    scrollbar-color: var(--gray-medium) var(--dark-surface); /* cor-do-polegar cor-da-trilha */
+}
+
+/* Para o modal-content, se ele tiver sua própria barra de rolagem */
+.modal-content::-webkit-scrollbar {
+    width: 6px; /* Barra de rolagem um pouco mais fina para o modal */
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--dark-surface-light);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--gray-dark);
+    border: 1px solid var(--dark-surface-light);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+.modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-dark) var(--dark-surface-light);
 }
